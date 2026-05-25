@@ -1,0 +1,404 @@
+# PROJECT
+
+Create a viral, modern, mobile-first PWA for Baby Gender Reveal events.
+
+The application must feel emotionally exciting, highly animated, social, memeable, and optimized for TikTok/Instagram sharing.
+
+Main objective:
+Create a product people WANT to share.
+
+Tech stack required:
+- Next.js latest (App Router)
+- TypeScript
+- TailwindCSS
+- Supabase
+- Framer Motion
+- Zustand
+- React Hook Form
+- Zod
+- PWA support
+- Mobile-first responsive design
+
+---
+
+# PRODUCT IDEA
+
+Users create a Baby Reveal Event.
+
+Friends and family join through:
+- invite link
+- QR code
+
+Participants can:
+- vote Team Boy or Team Girl
+- react live
+- send emojis
+- upload reaction videos/photos
+- participate in mini-games
+- view countdown
+- unlock fake reveals
+- watch final reveal animation
+
+The app should generate viral/shareable content automatically.
+
+---
+
+# CORE FEATURES
+
+## 1. Authentication
+
+Use Supabase Auth:
+- Google
+- Apple
+- Email magic link
+
+Anonymous guest access allowed.
+
+Guests should NOT need registration to join events.
+
+---
+
+# 2. Event Creation
+
+Users can create:
+- baby name
+- event title
+- reveal date/time
+- theme
+- reveal mode
+- cover image
+
+Generate:
+- unique event slug
+- invite URL
+- QR code
+
+---
+
+# 3. Reveal Themes
+
+Support multiple reveal styles:
+- fireworks
+- paint explosion
+- confetti
+- casino reveal
+- football reveal
+- mystery box
+- roulette
+- space rocket
+- glitch fake reveal
+- cinematic reveal
+
+Animations must be premium quality.
+
+Use Framer Motion heavily.
+
+---
+
+# 4. Team Voting System
+
+Participants choose:
+- Team Boy
+- Team Girl
+
+Show:
+- live vote percentages
+- avatars
+- animations
+- reactions
+
+Realtime updates using Supabase realtime.
+
+---
+
+# 5. Fake Reveal System
+
+Before final reveal:
+- trigger fake blue/pink reveals
+- glitch effects
+- suspense animations
+- countdown interruptions
+
+Goal:
+maximize emotional reactions and video recordings.
+
+---
+
+# 6. Live Reactions
+
+Participants can:
+- send emoji bursts
+- comments
+- GIF reactions
+
+Realtime synchronized.
+
+---
+
+# 7. Viral Content Generator
+
+After reveal:
+generate:
+- vertical video recap
+- highlight clips
+- winner leaderboard
+- meme screenshots
+
+Formats:
+- TikTok
+- Instagram Reels
+- Stories
+
+---
+
+# 8. AI Fun Features
+
+Optional AI section:
+- predict baby face
+- funny future personality
+- meme generator
+
+Keep playful and entertaining.
+
+---
+
+# 9. Gamification
+
+Leaderboard:
+- who guessed correctly
+- streaks
+- badges
+- funniest reaction
+
+Achievements:
+- "Most dramatic aunt"
+- "Prophet"
+- "Wrong but confident"
+
+---
+
+# 10. Push Notifications
+
+PWA notifications:
+- countdown reminders
+- reveal starting
+- fake reveal alert
+- results available
+
+---
+
+# DESIGN SYSTEM
+
+Style:
+- premium startup aesthetic
+- modern gradients
+- glassmorphism
+- dark/light mode
+- large typography
+- cinematic feel
+
+Must feel:
+- emotional
+- energetic
+- social
+- addictive
+
+Use:
+- smooth transitions
+- particle effects
+- microinteractions
+
+---
+
+# UX RULES
+
+- mobile-first
+- zero friction onboarding
+- ultra-fast loading
+- no unnecessary forms
+- no complex setup
+
+The app should feel usable in under 10 seconds.
+
+---
+
+# PWA REQUIREMENTS
+
+Implement:
+- offline support
+- install prompt
+- splash screen
+- push notifications
+- manifest.json
+- service worker
+
+Optimize Lighthouse score.
+
+---
+
+# DATABASE (SUPABASE)
+
+Create tables:
+
+## profiles
+- id
+- username
+- avatar
+- created_at
+
+## events
+- id
+- owner_id
+- title
+- baby_name
+- reveal_date
+- theme
+- reveal_mode
+- slug
+- cover_image
+- created_at
+
+## participants
+- id
+- event_id
+- user_id
+- nickname
+- avatar
+- team_vote
+
+## reactions
+- id
+- event_id
+- user_id
+- type
+- created_at
+
+## comments
+- id
+- event_id
+- user_id
+- message
+- created_at
+
+## media_uploads
+- id
+- event_id
+- user_id
+- media_url
+- media_type
+
+---
+
+# APP STRUCTURE
+
+Use scalable architecture:
+
+/app
+/components
+/features
+/hooks
+/store
+/services
+/lib
+/types
+/utils
+
+Feature-based organization preferred.
+
+---
+
+# REQUIRED PAGES
+
+- Landing Page
+- Create Event
+- Event Lobby
+- Live Reveal Room
+- Leaderboard
+- Share/Recap Page
+- User Profile
+- Settings
+
+---
+
+# LANDING PAGE
+
+The landing page must:
+- feel viral
+- show animations immediately
+- include mock reactions
+- autoplay subtle animations
+- show social proof
+
+Sections:
+- Hero
+- Live Demo Preview
+- Viral Clips
+- Features
+- Testimonials
+- CTA
+
+---
+
+# PERFORMANCE
+
+Requirements:
+- lazy loading
+- dynamic imports
+- image optimization
+- edge-ready
+- optimized animations
+- no hydration issues
+
+---
+
+# SEO
+
+Implement:
+- metadata
+- OG images
+- dynamic previews
+- share thumbnails
+
+Critical for virality.
+
+---
+
+# ACCESSIBILITY
+
+Implement:
+- keyboard navigation
+- aria labels
+- contrast compliance
+- reduced motion support
+
+---
+
+# DELIVERABLES
+
+Claude should generate:
+1. Full project structure
+2. Supabase schema
+3. Tailwind setup
+4. PWA configuration
+5. Landing page
+6. Realtime architecture
+7. Reusable UI components
+8. Reveal animation system
+9. Zustand stores
+10. Deployment instructions
+
+---
+
+# IMPORTANT
+
+Do NOT create a generic app.
+
+The app must feel:
+- emotional
+- cinematic
+- viral
+- social-first
+- premium
+- fun
+
+The product should feel designed for TikTok generation and emotional reactions.
