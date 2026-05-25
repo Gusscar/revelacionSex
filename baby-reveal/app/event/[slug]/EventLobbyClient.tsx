@@ -46,74 +46,85 @@ export function EventLobbyClient({
   const [inviteUrl, setInviteUrl] = useState('')
 
   useEffect(() => {
-    setEvent(initialEvent)
-    setParticipants(initialParticipants)
-    setInviteUrl(window.location.href)
+    async function init() {
+      setEvent(initialEvent)
+      setParticipants(initialParticipants)
+      setInviteUrl(window.location.href)
 
-    const participantKey = `participant_${initialEvent.id}`
+      const participantKey = `participant_${initialEvent.id}`
 
-    // Intentar restaurar desde el objeto completo guardado en localStorage
-    try {
-      const raw = localStorage.getItem(participantKey)
-      if (raw) {
-        const parsed = JSON.parse(raw)
-        if (parsed?.id && parsed?.event_id === initialEvent.id) {
-          // Restaurar inmediatamente — sin red, sin spinner
-          setCurrentUserParticipant(parsed as Participant)
-          setJoined(true)
-          setMounted(true)
+      try {
+        // 1. Restaurar desde localStorage (más rápido, sin red)
+        const raw = localStorage.getItem(participantKey)
+        if (raw) {
+          const parsed = JSON.parse(raw)
+          if (parsed?.id && parsed?.event_id === initialEvent.id) {
+            setCurrentUserParticipant(parsed as Participant)
+            setJoined(true)
+            // Refrescar en background
+            createClient()
+              .from('participants')
+              .select('*')
+              .eq('id', parsed.id)
+              .single()
+              .then(({ data }) => {
+                if (data) {
+                  setCurrentUserParticipant(data)
+                  localStorage.setItem(participantKey, JSON.stringify(data))
+                } else {
+                  localStorage.removeItem(participantKey)
+                  setJoined(false)
+                }
+              })
+            return
+          }
+          localStorage.removeItem(participantKey)
+        }
 
-          // Refrescar en background para tener datos frescos (voto, etc.)
-          createClient()
+        // 2. Buscar via sesión del servidor
+        if (userId) {
+          const existing = initialParticipants.find((p) => p.user_id === userId)
+          if (existing) {
+            setCurrentUserParticipant(existing)
+            localStorage.setItem(participantKey, JSON.stringify(existing))
+            setJoined(true)
+            return
+          }
+        }
+
+        // 3. Verificar sesión activa en el cliente (cubre timing SSR)
+        const { data: authData } = await createClient().auth.getUser()
+        if (authData.user) {
+          // Buscar participante directamente en DB
+          const { data: existing } = await createClient()
             .from('participants')
             .select('*')
-            .eq('id', parsed.id)
+            .eq('event_id', initialEvent.id)
+            .eq('user_id', authData.user.id)
             .single()
-            .then(({ data }) => {
-              if (data) {
-                setCurrentUserParticipant(data)
-                localStorage.setItem(participantKey, JSON.stringify(data))
-              } else {
-                // El participante ya no existe en la DB
-                localStorage.removeItem(participantKey)
-                setJoined(false)
-              }
-            })
-          return
-        }
-        // Formato viejo (solo ID) — limpiar
-        localStorage.removeItem(participantKey)
-      }
-    } catch {
-      localStorage.removeItem(`participant_${initialEvent.id}`)
-    }
 
-    // Fallback: usuario autenticado reconocido por el servidor
-    if (userId) {
-      const existing = initialParticipants.find((p) => p.user_id === userId)
-      if (existing) {
-        setCurrentUserParticipant(existing)
-        localStorage.setItem(participantKey, JSON.stringify(existing))
-        setJoined(true)
-        setMounted(true)
-        return
-      }
+          if (existing) {
+            setCurrentUserParticipant(existing)
+            localStorage.setItem(participantKey, JSON.stringify(existing))
+            setJoined(true)
+            return
+          }
 
-      // Usuario autenticado pero aún no tiene participante — pre-llenar su nombre
-      createClient()
-        .auth.getUser()
-        .then(({ data }) => {
+          // Autenticado pero sin participante — pre-llenar nombre
           const name =
-            data.user?.user_metadata?.name ??
-            data.user?.email?.split('@')[0] ??
+            authData.user.user_metadata?.name ??
+            authData.user.email?.split('@')[0] ??
             null
           setAuthDisplayName(name)
-          setMounted(true)
-        })
-      return
+        }
+      } catch {
+        // Si algo falla, mostrar la pantalla de invitacion
+      } finally {
+        setMounted(true)
+      }
     }
 
-    setMounted(true)
+    init()
   }, [])
 
   // Mantener localStorage sincronizado cuando el participante cambia (ej: voto)
