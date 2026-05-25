@@ -130,12 +130,8 @@ export function EventLobbyClient({
     setJoining(true)
     try {
       const supabase = createClient()
-      // Obtener el uid actual (puede ser autenticado o anónimo)
-      let uid = (await supabase.auth.getUser()).data.user?.id ?? null
-      if (!uid) {
-        const { data } = await supabase.auth.signInAnonymously()
-        uid = data.user?.id ?? null
-      }
+      // Obtener el uid del usuario autenticado (ya viene registrado desde InvitationScreen)
+      const uid = (await supabase.auth.getUser()).data.user?.id ?? null
       const participant = await joinEvent({
         event_id: initialEvent.id,
         nickname: name.trim(),

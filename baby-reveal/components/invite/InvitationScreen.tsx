@@ -9,6 +9,11 @@ import {
   useSpring,
 } from 'framer-motion'
 import { Event } from '@/types'
+import { createClient } from '@/lib/supabase/client'
+
+function nameToEmail(name: string) {
+  return `${name.toLowerCase().trim().replace(/[^a-z0-9]/g, '_')}@babyrevelacion.local`
+}
 
 interface InvitationScreenProps {
   event: Event
@@ -22,6 +27,11 @@ type Phase = 'intro' | 'invitation' | 'join'
 export function InvitationScreen({ event, onJoin, joining, authDisplayName }: InvitationScreenProps) {
   const [phase, setPhase] = useState<Phase>('intro')
   const [nickname, setNickname] = useState(authDisplayName ?? '')
+  const [authTab, setAuthTab] = useState<'registro' | 'login'>('registro')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [authError, setAuthError] = useState<string | null>(null)
+  const [authLoading, setAuthLoading] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
 
   // 3D tilt
@@ -71,9 +81,44 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
     mouseY.set(0)
   }
 
-  async function handleSubmit() {
-    if (!nickname.trim() || joining) return
-    await onJoin(nickname.trim())
+  async function handleAuthAndJoin() {
+    setAuthError(null)
+    if (!nickname.trim()) return setAuthError('Ingresa tu nombre')
+    if (!password) return setAuthError('Ingresa tu contraseña')
+    if (authTab === 'registro' && password !== confirmPassword) return setAuthError('Las contraseñas no coinciden')
+    if (authTab === 'registro' && password.length < 6) return setAuthError('La contraseña debe tener al menos 6 caracteres')
+
+    setAuthLoading(true)
+    try {
+      const supabase = createClient()
+      const email = nameToEmail(nickname.trim())
+
+      if (authTab === 'registro') {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { name: nickname.trim() } },
+        })
+        if (error) {
+          if (error.message.toLowerCase().includes('already')) {
+            setAuthError('Ya existe una cuenta con ese nombre. Usa "Iniciar sesión".')
+          } else {
+            setAuthError(error.message)
+          }
+          return
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        if (error) {
+          setAuthError('Nombre o contraseña incorrectos')
+          return
+        }
+      }
+
+      await onJoin(nickname.trim())
+    } finally {
+      setAuthLoading(false)
+    }
   }
 
   const formattedDate = new Date(event.reveal_date).toLocaleDateString('es-ES', {
@@ -404,42 +449,78 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                           initial={{ opacity: 0, y: 16 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ type: 'spring', stiffness: 220, damping: 22 }}
-                          className="flex flex-col gap-4"
+                          className="flex flex-col gap-3"
                         >
-                          <div className="text-center">
-                            <p className="text-white/40 text-sm mb-1">Un ultimo paso</p>
-                            <h3 className="text-2xl font-black text-white">
-                              Como te llamas?
-                            </h3>
+                          {/* Tabs */}
+                          <div className="flex rounded-xl overflow-hidden border border-white/10">
+                            {(['registro', 'login'] as const).map((t) => (
+                              <button
+                                key={t}
+                                onClick={() => { setAuthTab(t); setAuthError(null) }}
+                                className={`flex-1 py-2 text-xs font-semibold transition-all cursor-pointer capitalize ${
+                                  authTab === t
+                                    ? 'bg-purple-600 text-white'
+                                    : 'text-white/40 hover:text-white/70'
+                                }`}
+                              >
+                                {t === 'registro' ? 'Registro' : 'Iniciar sesión'}
+                              </button>
+                            ))}
                           </div>
 
+                          {/* Nombre */}
                           <input
                             value={nickname}
                             onChange={(e) => setNickname(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                             placeholder="Tu nombre..."
-                            className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3.5 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 focus:bg-white/14 transition-all text-center text-base font-semibold"
+                            className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
                           />
 
+                          {/* Contraseña */}
+                          <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Contraseña..."
+                            className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
+                          />
+
+                          {/* Confirmar contraseña — solo en registro */}
+                          {authTab === 'registro' && (
+                            <input
+                              type="password"
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleAuthAndJoin()}
+                              placeholder="Confirmar contraseña..."
+                              className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
+                            />
+                          )}
+
+                          {authError && (
+                            <p className="text-red-400 text-xs text-center bg-red-500/10 rounded-xl px-3 py-2">
+                              {authError}
+                            </p>
+                          )}
+
                           <motion.button
-                            onClick={handleSubmit}
-                            disabled={!nickname.trim() || joining}
-                            whileHover={{ scale: nickname.trim() && !joining ? 1.03 : 1 }}
-                            whileTap={{ scale: nickname.trim() && !joining ? 0.96 : 1 }}
+                            onClick={handleAuthAndJoin}
+                            disabled={authLoading || joining}
+                            whileHover={{ scale: !authLoading && !joining ? 1.03 : 1 }}
+                            whileTap={{ scale: !authLoading && !joining ? 0.96 : 1 }}
                             className="relative w-full py-3.5 rounded-2xl font-black text-white text-base cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
                             style={{
-                              background:
-                                'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%)',
+                              background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%)',
                               boxShadow: '0 8px 32px rgba(168,85,247,0.5)',
                             }}
                           >
-                            {joining ? (
+                            {authLoading || joining ? (
                               <span className="flex items-center justify-center gap-2">
                                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                 Entrando...
                               </span>
                             ) : (
-                              'Entrar como invitado'
+                              authTab === 'registro' ? 'Registrarse y Entrar' : 'Iniciar sesión y Entrar'
                             )}
                           </motion.button>
 
