@@ -8,17 +8,14 @@ import { Input } from '@/components/ui/Input'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
-function nameToEmail(name: string) {
-  return `${name.toLowerCase().trim().replace(/[^a-z0-9]/g, '_')}@babyrevelacion.local`
-}
-
 type Tab = 'registro' | 'login'
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<{ name?: string; id: string } | null>(null)
+  const [user, setUser] = useState<{ name?: string; email?: string; id: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<Tab>('registro')
   const [nombre, setNombre] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -28,11 +25,11 @@ export default function ProfilePage() {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
-        const name =
-          data.user.user_metadata?.name ??
-          data.user.email?.split('@')[0] ??
-          'Usuario'
-        setUser({ name, id: data.user.id })
+        setUser({
+          name: data.user.user_metadata?.name ?? 'Usuario',
+          email: data.user.email,
+          id: data.user.id,
+        })
       }
       setLoading(false)
     })
@@ -40,6 +37,7 @@ export default function ProfilePage() {
 
   function resetForm() {
     setNombre('')
+    setEmail('')
     setPassword('')
     setConfirmPassword('')
     setError(null)
@@ -48,28 +46,28 @@ export default function ProfilePage() {
   async function handleRegister() {
     setError(null)
     if (!nombre.trim()) return setError('Ingresa tu nombre')
+    if (!email.trim()) return setError('Ingresa tu correo')
     if (password.length < 6) return setError('La contraseña debe tener al menos 6 caracteres')
     if (password !== confirmPassword) return setError('Las contraseñas no coinciden')
 
     setSubmitting(true)
     try {
       const supabase = createClient()
-      const email = nameToEmail(nombre.trim())
       const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: { data: { name: nombre.trim() } },
       })
       if (signUpError) {
         if (signUpError.message.toLowerCase().includes('already')) {
-          setError('Ya existe una cuenta con ese nombre. Intenta iniciar sesión.')
+          setError('Ya existe una cuenta con ese correo. Intenta iniciar sesión.')
         } else {
           setError(signUpError.message)
         }
         return
       }
       if (data.user) {
-        setUser({ name: nombre.trim(), id: data.user.id })
+        setUser({ name: nombre.trim(), email: email.trim(), id: data.user.id })
       }
     } finally {
       setSubmitting(false)
@@ -78,24 +76,26 @@ export default function ProfilePage() {
 
   async function handleLogin() {
     setError(null)
-    if (!nombre.trim()) return setError('Ingresa tu nombre')
+    if (!email.trim()) return setError('Ingresa tu correo')
     if (!password) return setError('Ingresa tu contraseña')
 
     setSubmitting(true)
     try {
       const supabase = createClient()
-      const email = nameToEmail(nombre.trim())
       const { data, error: loginError } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password,
       })
       if (loginError) {
-        setError('Nombre o contraseña incorrectos')
+        setError('Correo o contraseña incorrectos')
         return
       }
       if (data.user) {
-        const name = data.user.user_metadata?.name ?? nombre.trim()
-        setUser({ name, id: data.user.id })
+        setUser({
+          name: data.user.user_metadata?.name ?? 'Usuario',
+          email: data.user.email,
+          id: data.user.id,
+        })
       }
     } finally {
       setSubmitting(false)
@@ -135,13 +135,8 @@ export default function ProfilePage() {
                 <h1 className="text-xl font-black text-white text-center mb-1">
                   Hola, {user.name}!
                 </h1>
-                <p className="text-white/40 text-sm text-center mb-8">ID: {user.id.slice(0, 8)}...</p>
-                <Button
-                  onClick={handleSignOut}
-                  variant="secondary"
-                  size="lg"
-                  className="w-full"
-                >
+                <p className="text-white/40 text-sm text-center mb-8">{user.email}</p>
+                <Button onClick={handleSignOut} variant="secondary" size="lg" className="w-full">
                   Cerrar sesion
                 </Button>
               </>
@@ -153,10 +148,8 @@ export default function ProfilePage() {
                     <button
                       key={t}
                       onClick={() => { setTab(t); resetForm() }}
-                      className={`flex-1 py-2.5 text-sm font-semibold transition-all cursor-pointer capitalize ${
-                        tab === t
-                          ? 'bg-purple-600 text-white'
-                          : 'text-white/40 hover:text-white/70'
+                      className={`flex-1 py-2.5 text-sm font-semibold transition-all cursor-pointer ${
+                        tab === t ? 'bg-purple-600 text-white' : 'text-white/40 hover:text-white/70'
                       }`}
                     >
                       {t === 'registro' ? 'Registro' : 'Iniciar sesión'}
@@ -165,11 +158,20 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="flex flex-col gap-4">
+                  {tab === 'registro' && (
+                    <Input
+                      label="Nombre"
+                      placeholder="Tu nombre"
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                    />
+                  )}
                   <Input
-                    label="Nombre"
-                    placeholder="Tu nombre"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
+                    label="Correo"
+                    type="email"
+                    placeholder="tu@correo.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                   <Input
                     label="Contraseña"

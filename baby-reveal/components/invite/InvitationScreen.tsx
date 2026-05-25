@@ -11,10 +11,6 @@ import {
 import { Event } from '@/types'
 import { createClient } from '@/lib/supabase/client'
 
-function nameToEmail(name: string) {
-  return `${name.toLowerCase().trim().replace(/[^a-z0-9]/g, '_')}@babyrevelacion.local`
-}
-
 interface InvitationScreenProps {
   event: Event
   onJoin: (nickname: string) => Promise<void>
@@ -27,9 +23,12 @@ type Phase = 'intro' | 'invitation' | 'join'
 export function InvitationScreen({ event, onJoin, joining, authDisplayName }: InvitationScreenProps) {
   const [phase, setPhase] = useState<Phase>('intro')
   const [nickname, setNickname] = useState(authDisplayName ?? '')
+  const [email, setEmail] = useState('')
   const [authTab, setAuthTab] = useState<'registro' | 'login'>('registro')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const [authError, setAuthError] = useState<string | null>(null)
   const [authLoading, setAuthLoading] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -83,39 +82,48 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
 
   async function handleAuthAndJoin() {
     setAuthError(null)
-    if (!nickname.trim()) return setAuthError('Ingresa tu nombre')
-    if (!password) return setAuthError('Ingresa tu contraseña')
-    if (authTab === 'registro' && password !== confirmPassword) return setAuthError('Las contraseñas no coinciden')
-    if (authTab === 'registro' && password.length < 6) return setAuthError('La contraseña debe tener al menos 6 caracteres')
+
+    if (authTab === 'registro') {
+      if (!nickname.trim()) return setAuthError('Ingresa tu nombre')
+      if (!email.trim()) return setAuthError('Ingresa tu correo')
+      if (password.length < 6) return setAuthError('La contraseña debe tener al menos 6 caracteres')
+      if (password !== confirmPassword) return setAuthError('Las contraseñas no coinciden')
+    } else {
+      if (!email.trim()) return setAuthError('Ingresa tu correo')
+      if (!password) return setAuthError('Ingresa tu contraseña')
+    }
 
     setAuthLoading(true)
     try {
       const supabase = createClient()
-      const email = nameToEmail(nickname.trim())
 
       if (authTab === 'registro') {
         const { error } = await supabase.auth.signUp({
-          email,
+          email: email.trim(),
           password,
           options: { data: { name: nickname.trim() } },
         })
         if (error) {
           if (error.message.toLowerCase().includes('already')) {
-            setAuthError('Ya existe una cuenta con ese nombre. Usa "Iniciar sesión".')
+            setAuthError('Ya existe una cuenta con ese correo. Usa "Iniciar sesión".')
           } else {
             setAuthError(error.message)
           }
           return
         }
+        await onJoin(nickname.trim())
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        })
         if (error) {
-          setAuthError('Nombre o contraseña incorrectos')
+          setAuthError('Correo o contraseña incorrectos')
           return
         }
+        const name = data.user?.user_metadata?.name ?? email.split('@')[0]
+        await onJoin(name)
       }
-
-      await onJoin(nickname.trim())
     } finally {
       setAuthLoading(false)
     }
@@ -457,33 +465,80 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                             </p>
                           </div>
 
-                          {/* Nombre */}
+                          {/* Nombre — solo en registro */}
+                          {authTab === 'registro' && (
+                            <input
+                              value={nickname}
+                              onChange={(e) => setNickname(e.target.value)}
+                              placeholder="Tu nombre..."
+                              className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
+                            />
+                          )}
+
+                          {/* Correo */}
                           <input
-                            value={nickname}
-                            onChange={(e) => setNickname(e.target.value)}
-                            placeholder="Tu nombre..."
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="tu@correo.com"
                             className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
                           />
 
                           {/* Contraseña */}
-                          <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Contraseña..."
-                            className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
-                          />
+                          <div className="relative">
+                            <input
+                              type={showPassword ? 'text' : 'password'}
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              placeholder="Contraseña..."
+                              className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
+                            />
+                            <button
+                              type="button"
+                              tabIndex={-1}
+                              onClick={() => setShowPassword((v) => !v)}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                            >
+                              {showPassword ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>
+                                </svg>
+                              ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
 
                           {/* Confirmar contraseña — solo en registro */}
                           {authTab === 'registro' && (
-                            <input
-                              type="password"
-                              value={confirmPassword}
-                              onChange={(e) => setConfirmPassword(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handleAuthAndJoin()}
-                              placeholder="Confirmar contraseña..."
-                              className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
-                            />
+                            <div className="relative">
+                              <input
+                                type={showConfirm ? 'text' : 'password'}
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleAuthAndJoin()}
+                                placeholder="Confirmar contraseña..."
+                                className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
+                              />
+                              <button
+                                type="button"
+                                tabIndex={-1}
+                                onClick={() => setShowConfirm((v) => !v)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                              >
+                                {showConfirm ? (
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>
+                                  </svg>
+                                ) : (
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                                  </svg>
+                                )}
+                              </button>
+                            </div>
                           )}
 
                           {authError && (
