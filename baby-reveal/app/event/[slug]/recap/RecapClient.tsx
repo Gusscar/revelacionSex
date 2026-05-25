@@ -24,7 +24,7 @@ export function RecapClient({ event, participants, reactions }: Props) {
   const topEmoji = Object.entries(reactionCounts).sort((a, b) => b[1] - a[1]).slice(0, 5)
 
   async function handleShare() {
-    const text = `${event.title}: Es un ${event.result === 'boy' ? 'NINO 💙' : 'NINA 💖'}! ${participants.length} personas votaron. Ver el recap:`
+    const text = `${event.title}: Es un ${event.result === 'boy' ? 'NIÑO 💙' : 'NIÑA 💖'}! ${participants.length} personas votaron. Ver el recap:`
     if (navigator.share) {
       await navigator.share({ title: event.title, text, url: window.location.href })
     } else {
@@ -55,7 +55,7 @@ export function RecapClient({ event, participants, reactions }: Props) {
           <div className="text-8xl font-black text-white mb-4" style={{
             textShadow: isBoy ? '0 0 60px #3b82f6' : '0 0 60px #ec4899'
           }}>
-            {isBoy ? 'NINO 💙' : 'NINA 💖'}
+            {isBoy ? 'NIÑO 💙' : 'NIÑA 💖'}
           </div>
           <p className="text-white/60 text-xl">{event.title}</p>
           {event.baby_name && (

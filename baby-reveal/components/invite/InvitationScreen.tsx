@@ -13,18 +13,15 @@ import { Event } from '@/types'
 interface InvitationScreenProps {
   event: Event
   onJoin: (nickname: string) => Promise<void>
-  onGoogleSignIn: () => Promise<void>
   joining: boolean
-  // Si el usuario ya viene autenticado (regresó de OAuth) pero aún no tiene participante
   authDisplayName?: string | null
 }
 
 type Phase = 'intro' | 'invitation' | 'join'
 
-export function InvitationScreen({ event, onJoin, onGoogleSignIn, joining, authDisplayName }: InvitationScreenProps) {
+export function InvitationScreen({ event, onJoin, joining, authDisplayName }: InvitationScreenProps) {
   const [phase, setPhase] = useState<Phase>('intro')
   const [nickname, setNickname] = useState(authDisplayName ?? '')
-  const [googleLoading, setGoogleLoading] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
 
   // 3D tilt
@@ -412,43 +409,10 @@ export function InvitationScreen({ event, onJoin, onGoogleSignIn, joining, authD
                           <div className="text-center">
                             <p className="text-white/40 text-sm mb-1">Un ultimo paso</p>
                             <h3 className="text-2xl font-black text-white">
-                              Como quieres entrar?
+                              Como te llamas?
                             </h3>
                           </div>
 
-                          {/* Google Sign-In — opcion principal */}
-                          <motion.button
-                            onClick={async () => {
-                              setGoogleLoading(true)
-                              await onGoogleSignIn()
-                              setGoogleLoading(false)
-                            }}
-                            disabled={googleLoading || joining}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.97 }}
-                            className="w-full py-4 rounded-2xl font-bold text-white flex items-center justify-center gap-3 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border border-white/20 bg-white/10 hover:bg-white/15 transition-colors"
-                          >
-                            {googleLoading ? (
-                              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                              <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
-                                <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/>
-                                <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.8 19 12 24 12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.5 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/>
-                                <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.1 35.5 26.6 36 24 36c-5.2 0-9.7-3.4-11.3-8l-6.6 5.1C9.5 39.5 16.2 44 24 44z"/>
-                                <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.2 5.2C43 35.1 44 30 44 24c0-1.3-.1-2.6-.4-3.9z"/>
-                              </svg>
-                            )}
-                            Entrar con Google
-                          </motion.button>
-
-                          {/* Divisor */}
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1 h-px bg-white/10" />
-                            <span className="text-white/30 text-xs">o continua como invitado</span>
-                            <div className="flex-1 h-px bg-white/10" />
-                          </div>
-
-                          {/* Guest name input */}
                           <input
                             value={nickname}
                             onChange={(e) => setNickname(e.target.value)}
@@ -459,7 +423,7 @@ export function InvitationScreen({ event, onJoin, onGoogleSignIn, joining, authD
 
                           <motion.button
                             onClick={handleSubmit}
-                            disabled={!nickname.trim() || joining || googleLoading}
+                            disabled={!nickname.trim() || joining}
                             whileHover={{ scale: nickname.trim() && !joining ? 1.03 : 1 }}
                             whileTap={{ scale: nickname.trim() && !joining ? 0.96 : 1 }}
                             className="relative w-full py-3.5 rounded-2xl font-black text-white text-base cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"

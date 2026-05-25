@@ -59,7 +59,7 @@ export function FakeReveal({ team, onComplete }: FakeRevealProps) {
             style={{ color: isBoy ? '#3b82f6' : '#ec4899' }}
           >
             <div className="text-8xl font-black" style={{ textShadow: `0 0 80px currentColor` }}>
-              {isBoy ? 'NINO 💙' : 'NINA 💖'}
+              {isBoy ? 'NIÑO 💙' : 'NIÑA 💖'}
             </div>
           </motion.div>
         )}

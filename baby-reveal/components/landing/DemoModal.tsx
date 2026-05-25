@@ -75,7 +75,7 @@ export function DemoModal({ onClose }: Props) {
   useEffect(() => {
     if (phase === 'fake') {
       const interval = setInterval(() => {
-        setGlitchText(Math.random() > 0.5 ? 'NINA 💖' : 'NINO 💙')
+        setGlitchText(Math.random() > 0.5 ? 'NIÑA 💖' : 'NIÑO 💙')
       }, 150)
       setTimeout(() => clearInterval(interval), 2000)
       return () => clearInterval(interval)
@@ -205,15 +205,15 @@ export function DemoModal({ onClose }: Props) {
                   </motion.div>
                 </div>
                 <div className="flex justify-between text-sm font-bold">
-                  <span className="text-blue-400">💙 Nino {boyPct}%</span>
-                  <span className="text-pink-400">Nina {girlPct}% 💖</span>
+                  <span className="text-blue-400">💙 Niño {boyPct}%</span>
+                  <span className="text-pink-400">Niña {girlPct}% 💖</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-blue-500/20 border border-blue-500/40 rounded-2xl py-4 text-center text-blue-300 font-bold text-lg">
-                    💙 Nino
+                    💙 Niño
                   </div>
                   <div className="bg-pink-500/20 border border-pink-500/40 rounded-2xl py-4 text-center text-pink-300 font-bold text-lg">
-                    💖 Nina
+                    💖 Niña
                   </div>
                 </div>
                 <p className="text-center text-yellow-400 text-sm font-semibold animate-pulse">
@@ -275,7 +275,7 @@ export function DemoModal({ onClose }: Props) {
                       className="text-7xl font-black text-pink-400"
                       style={{ textShadow: '0 0 60px #ec4899' }}
                     >
-                      NINA 💖
+                      NIÑA 💖
                     </div>
                     <p className="text-white/60 text-lg mt-3">Es una hermosa beba!</p>
                   </motion.div>
@@ -287,7 +287,7 @@ export function DemoModal({ onClose }: Props) {
             {phase === 'recap' && (
               <motion.div key="recap" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col gap-4 flex-1">
                 <div className="text-center">
-                  <div className="text-5xl mb-2" style={{ textShadow: '0 0 40px #ec4899' }}>NINA 💖</div>
+                  <div className="text-5xl mb-2" style={{ textShadow: '0 0 40px #ec4899' }}>NIÑA 💖</div>
                   <p className="text-white/50 text-sm">Recap del evento</p>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">

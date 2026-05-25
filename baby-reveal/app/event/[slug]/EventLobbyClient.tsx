@@ -99,13 +99,11 @@ export function EventLobbyClient({
         return
       }
 
-      // Usuario autenticado (vino de Google OAuth) pero aún no tiene participante
-      // Pre-llenar su nombre de Google en la pantalla de invitación
+      // Usuario autenticado pero aún no tiene participante — pre-llenar su nombre
       createClient()
         .auth.getUser()
         .then(({ data }) => {
           const name =
-            data.user?.user_metadata?.full_name ??
             data.user?.user_metadata?.name ??
             data.user?.email?.split('@')[0] ??
             null
@@ -127,20 +125,12 @@ export function EventLobbyClient({
     )
   }, [currentUserParticipant])
 
-  async function handleGoogleSignIn() {
-    const supabase = createClient()
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.href },
-    })
-  }
-
   async function handleJoin(name: string) {
     if (!name.trim()) return
     setJoining(true)
     try {
       const supabase = createClient()
-      // Obtener el uid actual (puede ser Google o anónimo ya activo)
+      // Obtener el uid actual (puede ser autenticado o anónimo)
       let uid = (await supabase.auth.getUser()).data.user?.id ?? null
       if (!uid) {
         const { data } = await supabase.auth.signInAnonymously()
@@ -192,7 +182,6 @@ export function EventLobbyClient({
       <InvitationScreen
         event={initialEvent}
         onJoin={handleJoin}
-        onGoogleSignIn={handleGoogleSignIn}
         joining={joining}
         authDisplayName={authDisplayName}
       />

@@ -99,7 +99,7 @@ export function KeeperClient({ event, initialParticipants, token }: Props) {
           {!nameSaved ? (
             <>
               <p className="text-white/40 text-xs mb-3">
-                El padre no sabe si es nino o nina, por eso no puso el nombre. Tu decides cual va.
+                El padre no sabe si es niño o niña, por eso no puso el nombre. Tu decides cual va.
               </p>
               <div className="flex gap-2">
                 <input
@@ -154,8 +154,8 @@ export function KeeperClient({ event, initialParticipants, token }: Props) {
             <div className="bg-gradient-to-r from-pink-500 to-rose-400 h-full flex-1" />
           </div>
           <div className="flex justify-between text-sm font-bold">
-            <span className="text-blue-400">💙 Nino {voteStats.boyPercent}% ({voteStats.boy})</span>
-            <span className="text-pink-400">Nina {voteStats.girlPercent}% ({voteStats.girl}) 💖</span>
+            <span className="text-blue-400">💙 Niño {voteStats.boyPercent}% ({voteStats.boy})</span>
+            <span className="text-pink-400">Niña {voteStats.girlPercent}% ({voteStats.girl}) 💖</span>
           </div>
           {participants.length > 0 && (
             <p className="text-center text-white/30 text-xs mt-3">
@@ -186,7 +186,7 @@ export function KeeperClient({ event, initialParticipants, token }: Props) {
                   }`}
                 >
                   💙<br />
-                  <span className="text-base">Nino</span>
+                  <span className="text-base">Niño</span>
                 </motion.button>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
@@ -198,7 +198,7 @@ export function KeeperClient({ event, initialParticipants, token }: Props) {
                   }`}
                 >
                   💖<br />
-                  <span className="text-base">Nina</span>
+                  <span className="text-base">Niña</span>
                 </motion.button>
               </div>
               {selectedGender && (
@@ -209,7 +209,7 @@ export function KeeperClient({ event, initialParticipants, token }: Props) {
                     size="lg"
                     className="w-full"
                   >
-                    Confirmar: Es {isBoy ? 'Nino 💙' : 'Nina 💖'}
+                    Confirmar: Es {isBoy ? 'Niño 💙' : 'Niña 💖'}
                   </Button>
                 </motion.div>
               )}
@@ -220,7 +220,7 @@ export function KeeperClient({ event, initialParticipants, token }: Props) {
                 className={`text-5xl font-black mb-2 ${isBoy ? 'text-blue-400' : 'text-pink-400'}`}
                 style={{ filter: revealed ? 'none' : 'blur(8px)', transition: 'filter 0.5s' }}
               >
-                {isBoy ? 'NINO 💙' : 'NINA 💖'}
+                {isBoy ? 'NIÑO 💙' : 'NIÑA 💖'}
               </div>
               {!revealed && (
                 <>
@@ -307,7 +307,7 @@ export function KeeperClient({ event, initialParticipants, token }: Props) {
                   color: isBoy ? '#3b82f6' : '#ec4899',
                 }}
               >
-                {isBoy ? 'NINO 💙' : 'NINA 💖'}
+                {isBoy ? 'NIÑO 💙' : 'NIÑA 💖'}
               </div>
               {babyName && (
                 <p className="text-white/60 text-lg">Baby {babyName}</p>

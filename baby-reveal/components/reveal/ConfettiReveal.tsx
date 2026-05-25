@@ -14,7 +14,7 @@ export function ConfettiReveal({ team }: ConfettiRevealProps) {
   const isBoy = team === 'boy'
   const color = isBoy ? '#3b82f6' : '#ec4899'
   const secondColor = isBoy ? '#06b6d4' : '#f43f5e'
-  const label = isBoy ? 'NINO 💙' : 'NINA 💖'
+  const label = isBoy ? 'NIÑO 💙' : 'NIÑA 💖'
 
   useEffect(() => {
     const canvas = canvasRef.current
