@@ -436,7 +436,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                                   transform: 'skewX(-15deg)',
                                 }}
                               />
-                              Entrar a la Fiesta 🎉
+                              Registrarse 🎉
                             </motion.button>
                           </motion.div>
                         </motion.div>
@@ -451,21 +451,10 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                           transition={{ type: 'spring', stiffness: 220, damping: 22 }}
                           className="flex flex-col gap-3"
                         >
-                          {/* Tabs */}
-                          <div className="flex rounded-xl overflow-hidden border border-white/10">
-                            {(['registro', 'login'] as const).map((t) => (
-                              <button
-                                key={t}
-                                onClick={() => { setAuthTab(t); setAuthError(null) }}
-                                className={`flex-1 py-2 text-xs font-semibold transition-all cursor-pointer capitalize ${
-                                  authTab === t
-                                    ? 'bg-purple-600 text-white'
-                                    : 'text-white/40 hover:text-white/70'
-                                }`}
-                              >
-                                {t === 'registro' ? 'Registro' : 'Iniciar sesión'}
-                              </button>
-                            ))}
+                          <div className="text-center">
+                            <p className="text-white/40 text-sm">
+                              {authTab === 'registro' ? 'Crea tu cuenta para entrar' : 'Inicia sesión para entrar'}
+                            </p>
                           </div>
 
                           {/* Nombre */}
@@ -525,8 +514,15 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                           </motion.button>
 
                           <button
+                            onClick={() => { setAuthTab(authTab === 'registro' ? 'login' : 'registro'); setAuthError(null) }}
+                            className="text-white/40 text-sm text-center hover:text-white/70 transition-colors cursor-pointer"
+                          >
+                            {authTab === 'registro' ? '¿Ya tienes una sesión? Inicia aquí' : '¿No tienes cuenta? Regístrate'}
+                          </button>
+
+                          <button
                             onClick={() => setPhase('invitation')}
-                            className="text-white/28 text-sm text-center hover:text-white/55 transition-colors cursor-pointer"
+                            className="text-white/25 text-xs text-center hover:text-white/50 transition-colors cursor-pointer"
                           >
                             Volver
                           </button>
