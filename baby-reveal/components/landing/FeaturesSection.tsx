@@ -61,7 +61,7 @@ export function FeaturesSection() {
             viewport={{ once: true }}
             transition={{ delay: i * 0.08 }}
           >
-            <GlassCard className="p-6 h-full hover:border-purple-500/40 transition-all duration-300 group">
+            <GlassCard className="p-6 h-full hover:border-blue-500/40 transition-all duration-300 group">
               <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                 {f.icon}
               </div>

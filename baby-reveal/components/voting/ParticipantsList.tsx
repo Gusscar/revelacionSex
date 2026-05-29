@@ -20,7 +20,7 @@ export function ParticipantsList() {
             className="flex items-center justify-between py-2 px-3 rounded-xl bg-white/5"
           >
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold text-white">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center text-xs font-bold text-white">
                 {p.nickname[0]?.toUpperCase()}
               </div>
               <span className="text-sm text-white/80 font-medium">{p.nickname}</span>

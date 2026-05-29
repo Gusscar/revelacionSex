@@ -16,7 +16,7 @@ export default function LandingPage() {
         <div className="max-w-2xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
             Tu bebe merece el{' '}
-            <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-400 to-pink-400 bg-clip-text text-transparent">
               reveal perfecto
             </span>
           </h2>

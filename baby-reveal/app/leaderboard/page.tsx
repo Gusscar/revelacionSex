@@ -13,7 +13,7 @@ const badges = [
 
 export default function LeaderboardPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-black px-4 py-12">
+    <main className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-900 to-black px-4 py-12">
       <div className="max-w-lg mx-auto">
         <Link href="/" className="text-white/40 hover:text-white text-sm mb-8 inline-block transition-colors">
           ← Volver

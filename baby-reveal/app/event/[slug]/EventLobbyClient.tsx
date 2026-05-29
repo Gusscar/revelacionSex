@@ -178,7 +178,7 @@ export function EventLobbyClient({
   // Esperar a que el useEffect lea localStorage antes de decidir qué mostrar
   if (!mounted) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-black flex items-center justify-center">
+      <main className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-900 to-black flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
       </main>
     )
@@ -196,7 +196,7 @@ export function EventLobbyClient({
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-black">
+    <main className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-900 to-black">
       {/* Tabs */}
       <div className="sticky top-0 z-40 bg-black/50 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-lg mx-auto flex">
@@ -206,7 +206,7 @@ export function EventLobbyClient({
               onClick={() => setTab(t)}
               className={`flex-1 py-4 text-sm font-semibold transition-all cursor-pointer ${
                 tab === t
-                  ? 'text-white border-b-2 border-purple-400'
+                  ? 'text-white border-b-2 border-blue-400'
                   : 'text-white/40 hover:text-white/70'
               }`}
             >
@@ -243,7 +243,7 @@ export function EventLobbyClient({
                 onChange={(e) => setComment(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleComment()}
                 placeholder="Escribe algo..."
-                className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-purple-400"
+                className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-blue-400"
               />
               <Button onClick={handleComment} size="md" className="flex-shrink-0">
                 Enviar
@@ -259,7 +259,7 @@ export function EventLobbyClient({
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-white/5 rounded-xl p-3"
                 >
-                  <p className="text-xs text-purple-400 font-semibold mb-1">
+                  <p className="text-xs text-blue-400 font-semibold mb-1">
                     {c.nickname ?? 'Anonimo'}
                   </p>
                   <p className="text-white/80 text-sm">{c.message}</p>
@@ -281,7 +281,7 @@ export function EventLobbyClient({
             className="max-w-lg mx-auto px-4 py-10 flex flex-col items-center gap-6"
           >
             <h2 className="text-2xl font-black text-white">Invitar amigos</h2>
-            <GlassCard className="p-6" glow="purple">
+            <GlassCard className="p-6" glow="blue">
               <QRCode
                 value={inviteUrl}
                 size={220}

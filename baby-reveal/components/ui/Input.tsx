@@ -23,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             type={inputType}
             className={cn(
               'w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-3',
-              'text-white placeholder-white/40 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400',
+              'text-white placeholder-white/40 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400',
               'transition-all duration-200',
               isPassword && 'pr-11',
               error && 'border-red-400 focus:border-red-400 focus:ring-red-400',

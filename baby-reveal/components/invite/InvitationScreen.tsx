@@ -143,7 +143,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
         animate={{ scale: [1, 1.25, 1], opacity: [0.25, 0.45, 0.25] }}
         transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
         className="absolute -top-1/4 -left-1/4 w-[70vw] h-[70vw] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, #7c3aed 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, #1d4ed8 0%, transparent 70%)' }}
       />
       <motion.div
         animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.38, 0.2] }}
@@ -155,7 +155,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
         animate={{ scale: [1, 1.2, 1], opacity: [0.12, 0.28, 0.12] }}
         transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut', delay: 5 }}
         className="absolute top-[25%] right-[10%] w-[45vw] h-[45vw] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, #a855f7 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)' }}
       />
 
       {/* Floating particles */}
@@ -181,7 +181,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
             )}
             {p.type === 1 && (
               <div
-                className="w-full h-full bg-purple-300"
+                className="w-full h-full bg-blue-300"
                 style={{
                   clipPath:
                     'polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)',
@@ -210,7 +210,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                 key={delay}
                 animate={{ scale: [1, 3.5], opacity: [0.5, 0] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: 'easeOut', delay }}
-                className="absolute w-28 h-28 rounded-full border border-purple-400/60"
+                className="absolute w-28 h-28 rounded-full border border-blue-400/60"
               />
             ))}
 
@@ -220,7 +220,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
               animate={{ scale: [0, 1.6, 1], opacity: [0, 0.7, 0.35] }}
               transition={{ duration: 1.4, ease: 'easeOut' }}
               className="absolute w-56 h-56 rounded-full pointer-events-none"
-              style={{ background: 'radial-gradient(circle, #c084fc 0%, #a855f7 40%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, #60a5fa 0%, #3b82f6 40%, transparent 70%)' }}
             />
 
             {/* Baby emoji */}
@@ -229,7 +229,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.25, type: 'spring', stiffness: 220, damping: 14 }}
               className="text-[86px] relative z-10 mb-5 select-none"
-              style={{ filter: 'drop-shadow(0 0 32px rgba(192,132,252,0.85))' }}
+              style={{ filter: 'drop-shadow(0 0 32px rgba(96,165,250,0.85))' }}
             >
               👶
             </motion.div>
@@ -241,12 +241,12 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
               transition={{ delay: 0.75, duration: 0.6 }}
               className="text-center relative z-10 select-none"
             >
-              <p className="text-purple-300/60 text-xs font-bold tracking-[0.35em] uppercase mb-2">
+              <p className="text-blue-300/60 text-xs font-bold tracking-[0.35em] uppercase mb-2">
                 Tienes una
               </p>
               <h1
                 className="text-5xl font-black text-white"
-                style={{ textShadow: '0 0 60px rgba(192,132,252,0.65)' }}
+                style={{ textShadow: '0 0 60px rgba(96,165,250,0.65)' }}
               >
                 Invitacion
               </h1>
@@ -278,7 +278,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                   className="absolute inset-0 rounded-3xl pointer-events-none"
                   style={{
                     transform: 'translateZ(-30px) scale(0.96)',
-                    background: 'rgba(120,40,200,0.45)',
+                    background: 'rgba(30,64,175,0.45)',
                     filter: 'blur(28px)',
                   }}
                 />
@@ -288,7 +288,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                   className="relative rounded-3xl overflow-hidden border border-white/20"
                   style={{
                     background:
-                      'linear-gradient(145deg, rgba(124,58,237,0.3) 0%, rgba(8,3,20,0.92) 55%, rgba(236,72,153,0.22) 100%)',
+                      'linear-gradient(145deg, rgba(37,99,235,0.3) 0%, rgba(8,3,20,0.92) 55%, rgba(236,72,153,0.22) 100%)',
                     backdropFilter: 'blur(48px)',
                     boxShadow:
                       '0 40px 90px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.18)',
@@ -306,7 +306,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                       className="absolute inset-0"
                       style={{
                         background:
-                          'linear-gradient(135deg, #6d28d9 0%, #a855f7 45%, #ec4899 100%)',
+                          'linear-gradient(135deg, #1d4ed8 0%, #3b82f6 45%, #ec4899 100%)',
                       }}
                     />
                     {/* Shine overlay */}
@@ -365,7 +365,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                             transition={{ delay: 0.1 }}
                             className="text-center"
                           >
-                            <p className="text-purple-300/60 text-[10px] tracking-widest uppercase mb-1">
+                            <p className="text-blue-300/60 text-[10px] tracking-widest uppercase mb-1">
                               Estas invitado/a a
                             </p>
                             <h2 className="text-2xl font-black text-white leading-snug">
@@ -392,7 +392,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                                 className="text-3xl font-black text-transparent bg-clip-text"
                                 style={{
                                   backgroundImage:
-                                    'linear-gradient(135deg, #c084fc, #ec4899)',
+                                    'linear-gradient(135deg, #60a5fa, #ec4899)',
                                 }}
                               >
                                 {event.baby_name}
@@ -429,8 +429,8 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                               className="relative w-full py-4 rounded-2xl font-black text-white text-lg cursor-pointer overflow-hidden"
                               style={{
                                 background:
-                                  'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%)',
-                                boxShadow: '0 8px 32px rgba(168,85,247,0.55)',
+                                  'linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #ec4899 100%)',
+                                boxShadow: '0 8px 32px rgba(59,130,246,0.55)',
                               }}
                             >
                               {/* Moving shine */}
@@ -471,7 +471,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                               value={nickname}
                               onChange={(e) => setNickname(e.target.value)}
                               placeholder="Tu nombre..."
-                              className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
+                              className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-400 transition-all text-sm font-semibold"
                             />
                           )}
 
@@ -481,7 +481,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="tu@correo.com"
-                            className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
+                            className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-400 transition-all text-sm font-semibold"
                           />
 
                           {/* Contraseña */}
@@ -491,7 +491,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
                               placeholder="Contraseña..."
-                              className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
+                              className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-blue-400 transition-all text-sm font-semibold"
                             />
                             <button
                               type="button"
@@ -520,7 +520,7 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleAuthAndJoin()}
                                 placeholder="Confirmar contraseña..."
-                                className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition-all text-sm font-semibold"
+                                className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-blue-400 transition-all text-sm font-semibold"
                               />
                               <button
                                 type="button"
@@ -554,8 +554,8 @@ export function InvitationScreen({ event, onJoin, joining, authDisplayName }: In
                             whileTap={{ scale: !authLoading && !joining ? 0.96 : 1 }}
                             className="relative w-full py-3.5 rounded-2xl font-black text-white text-base cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
                             style={{
-                              background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%)',
-                              boxShadow: '0 8px 32px rgba(168,85,247,0.5)',
+                              background: 'linear-gradient(135deg, #1d4ed8 0%, #3b82f6 50%, #ec4899 100%)',
+                              boxShadow: '0 8px 32px rgba(59,130,246,0.5)',
                             }}
                           >
                             {authLoading || joining ? (

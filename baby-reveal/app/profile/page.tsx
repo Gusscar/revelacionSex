@@ -111,22 +111,22 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-black flex items-center justify-center">
+      <main className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-900 to-black flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-black px-4 py-12">
+    <main className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-900 to-black px-4 py-12">
       <div className="max-w-sm mx-auto">
         <Link href="/" className="text-white/40 hover:text-white text-sm mb-8 inline-block">
           ← Volver
         </Link>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <GlassCard className="p-8" glow="purple">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-4xl mx-auto mb-6">
+          <GlassCard className="p-8" glow="blue">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center text-4xl mx-auto mb-6">
               {user ? '👤' : '👶'}
             </div>
 
@@ -149,7 +149,7 @@ export default function ProfilePage() {
                       key={t}
                       onClick={() => { setTab(t); resetForm() }}
                       className={`flex-1 py-2.5 text-sm font-semibold transition-all cursor-pointer ${
-                        tab === t ? 'bg-purple-600 text-white' : 'text-white/40 hover:text-white/70'
+                        tab === t ? 'bg-blue-600 text-white' : 'text-white/40 hover:text-white/70'
                       }`}
                     >
                       {t === 'registro' ? 'Registro' : 'Iniciar sesión'}

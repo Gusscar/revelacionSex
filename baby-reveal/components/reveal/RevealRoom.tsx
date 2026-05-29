@@ -34,7 +34,7 @@ export function RevealRoom({ eventId, isOwner }: RevealRoomProps) {
     ? isBoy
       ? 'from-blue-950 via-blue-900 to-cyan-900'
       : 'from-pink-950 via-pink-900 to-rose-900'
-    : 'from-purple-950 via-slate-900 to-black'
+    : 'from-blue-950 via-slate-900 to-black'
 
   async function handleReveal(team: 'boy' | 'girl') {
     await triggerReveal(eventId, team)

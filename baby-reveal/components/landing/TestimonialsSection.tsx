@@ -56,7 +56,7 @@ export function TestimonialsSection() {
               glow={t.team === 'boy' ? 'blue' : 'pink'}
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center text-xl">
                   {t.emoji}
                 </div>
                 <div>

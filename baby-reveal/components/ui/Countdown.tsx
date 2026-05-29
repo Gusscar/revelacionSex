@@ -54,7 +54,7 @@ export function Countdown({ targetDate, onComplete }: CountdownProps) {
   return (
     <div className="flex gap-3 justify-center">
       {units.map(({ label, value }) => (
-        <GlassCard key={label} className="flex flex-col items-center p-3 min-w-[64px]" glow="purple">
+        <GlassCard key={label} className="flex flex-col items-center p-3 min-w-[64px]" glow="blue">
           <motion.span
             key={value}
             initial={{ y: -10, opacity: 0 }}

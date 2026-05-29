@@ -96,7 +96,7 @@ export default function CreateEventPage() {
     const keeperUrl = `${base}/keeper/${createdEvent.slug}/${createdEvent.keeper_token}`
 
     return (
-      <main className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-black px-4 py-12 flex items-center justify-center">
+      <main className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-900 to-black px-4 py-12 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -116,7 +116,7 @@ export default function CreateEventPage() {
           </div>
 
           {/* Invite link - for everyone */}
-          <GlassCard className="p-5" glow="purple">
+          <GlassCard className="p-5" glow="blue">
             <div className="flex items-start gap-3 mb-4">
               <span className="text-3xl">🎉</span>
               <div>
@@ -179,7 +179,7 @@ export default function CreateEventPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-black px-4 py-12">
+    <main className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-900 to-black px-4 py-12">
       <div className="max-w-lg mx-auto">
         <Link href="/" className="text-white/40 hover:text-white text-sm mb-8 inline-block transition-colors">
           ← Volver
@@ -220,7 +220,7 @@ export default function CreateEventPage() {
                     onClick={() => setValue('theme', theme.value)}
                     className={`flex items-center gap-2 p-3 rounded-xl border transition-all text-left cursor-pointer ${
                       selectedTheme === theme.value
-                        ? 'border-purple-400 bg-purple-500/20 text-white'
+                        ? 'border-blue-400 bg-blue-500/20 text-white'
                         : 'border-white/10 text-white/50 hover:border-white/30'
                     }`}
                   >
@@ -247,12 +247,12 @@ export default function CreateEventPage() {
                     onClick={() => setValue('reveal_mode', mode.value as FormValues['reveal_mode'])}
                     className={`flex items-start gap-3 p-4 rounded-xl border text-left cursor-pointer transition-all ${
                       watch('reveal_mode') === mode.value
-                        ? 'border-purple-400 bg-purple-500/20'
+                        ? 'border-blue-400 bg-blue-500/20'
                         : 'border-white/10 hover:border-white/30'
                     }`}
                   >
                     <div className={`w-4 h-4 rounded-full border-2 mt-0.5 flex-shrink-0 ${
-                      watch('reveal_mode') === mode.value ? 'border-purple-400 bg-purple-400' : 'border-white/30'
+                      watch('reveal_mode') === mode.value ? 'border-blue-400 bg-blue-400' : 'border-white/30'
                     }`} />
                     <div>
                       <p className="font-semibold text-white text-sm">{mode.label}</p>

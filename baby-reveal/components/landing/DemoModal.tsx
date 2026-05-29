@@ -132,7 +132,7 @@ export function DemoModal({ onClose }: Props) {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="relative w-full max-w-sm bg-gradient-to-br from-purple-950 via-slate-900 to-black border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-sm bg-gradient-to-br from-blue-950 via-slate-900 to-black border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
       >
         {/* Close */}
         <button
@@ -143,7 +143,7 @@ export function DemoModal({ onClose }: Props) {
         </button>
 
         {/* Demo badge */}
-        <div className="absolute top-4 left-4 z-10 bg-purple-500/30 border border-purple-400/40 rounded-full px-3 py-1 text-xs text-purple-300 font-semibold">
+        <div className="absolute top-4 left-4 z-10 bg-blue-500/30 border border-blue-400/40 rounded-full px-3 py-1 text-xs text-blue-300 font-semibold">
           DEMO EN VIVO
         </div>
 
@@ -168,7 +168,7 @@ export function DemoModal({ onClose }: Props) {
                         className="flex items-center justify-between bg-white/5 rounded-xl px-3 py-2"
                       >
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold text-white">
+                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-pink-500 flex items-center justify-center text-xs font-bold text-white">
                             {p.name[0]}
                           </div>
                           <span className="text-sm text-white/80">{p.name}</span>
@@ -330,7 +330,7 @@ export function DemoModal({ onClose }: Props) {
             <div
               key={p}
               className={`w-1.5 h-1.5 rounded-full transition-all ${
-                phase === p ? 'bg-purple-400 w-4' : 'bg-white/20'
+                phase === p ? 'bg-blue-400 w-4' : 'bg-white/20'
               }`}
             />
           ))}

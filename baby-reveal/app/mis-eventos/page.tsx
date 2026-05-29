@@ -33,7 +33,7 @@ export default function MisEventosPage() {
   if (!mounted) return null
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-950 via-slate-900 to-black px-4 py-12">
+    <main className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-900 to-black px-4 py-12">
       <div className="max-w-lg mx-auto">
         <Link href="/" className="text-white/40 hover:text-white text-sm mb-8 inline-block transition-colors">
           ← Volver
@@ -63,7 +63,7 @@ export default function MisEventosPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.08 }}
                 >
-                  <GlassCard className="p-5" glow="purple">
+                  <GlassCard className="p-5" glow="blue">
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <h2 className="font-black text-white text-lg">{ev.title}</h2>
