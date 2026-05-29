@@ -80,6 +80,32 @@ export function EventLobbyClient({
           localStorage.removeItem(participantKey)
         }
 
+        // 2. Buscar via sesión del servidor
+        if (userId) {
+          const existing = initialParticipants.find((p) => p.user_id === userId)
+          if (existing) {
+            setCurrentUserParticipant(existing)
+            localStorage.setItem(participantKey, JSON.stringify(existing))
+            setJoined(true)
+            return
+          }
+        }
+
+        // 3. Verificar sesión activa en el cliente
+        const { data: authData } = await createClient().auth.getUser()
+        if (authData.user) {
+          const { data: existing } = await createClient()
+            .from('participants')
+            .select('*')
+            .eq('event_id', initialEvent.id)
+            .eq('user_id', authData.user.id)
+            .single()
+          if (existing) {
+            setCurrentUserParticipant(existing)
+            localStorage.setItem(participantKey, JSON.stringify(existing))
+            setJoined(true)
+          }
+        }
       } catch {
         // Si algo falla, mostrar la pantalla de invitacion
       } finally {
@@ -103,10 +129,11 @@ export function EventLobbyClient({
     if (!name.trim()) return
     setJoining(true)
     try {
+      const uid = (await createClient().auth.getUser()).data.user?.id ?? null
       const participant = await joinEvent({
         event_id: initialEvent.id,
         nickname: name.trim(),
-        user_id: null,
+        user_id: uid,
       })
       setCurrentUserParticipant(participant)
       addParticipant(participant)
