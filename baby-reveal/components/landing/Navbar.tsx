@@ -31,8 +31,8 @@ export function Navbar() {
 
         {/* Mobile: Iniciar sesión + hamburger */}
         <div className="flex sm:hidden items-center gap-2">
-          <Link href="/login" className="text-white/60 hover:text-white text-sm font-semibold transition-colors">
-            Iniciar sesión
+          <Link href="/login">
+            <Button size="sm" variant="primary">Iniciar sesión</Button>
           </Link>
           <button
             onClick={() => setOpen(v => !v)}
