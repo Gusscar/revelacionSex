@@ -9,7 +9,7 @@ import { saveGuestId, loadGuestId } from '@/utils/guestAuth'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [tab, setTab] = useState<'registro' | 'login'>('registro')
+  const [tab, setTab] = useState<'registro' | 'login'>('login')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -18,8 +18,10 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  const [hasSession, setHasSession] = useState(false)
+
   useEffect(() => {
-    if (loadGuestId()) router.replace('/mis-eventos')
+    setHasSession(!!loadGuestId())
   }, [])
 
   async function handleSubmit() {
@@ -55,6 +57,28 @@ export default function LoginPage() {
             <h1 className="text-2xl font-black text-white">Baby Revelación</h1>
           </Link>
         </div>
+
+        {/* Sesión activa */}
+        {hasSession && (
+          <div className="mb-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
+            <p className="text-blue-300/80 text-sm">Ya tienes una sesión activa</p>
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={() => router.push('/mis-eventos')}
+                className="text-blue-400 text-xs font-semibold hover:text-blue-300 transition-colors cursor-pointer"
+              >
+                Ir a mis eventos
+              </button>
+              <span className="text-white/20">|</span>
+              <button
+                onClick={() => { localStorage.removeItem('guest_account_id'); setHasSession(false) }}
+                className="text-red-400 text-xs font-semibold hover:text-red-300 transition-colors cursor-pointer"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Card */}
         <div
