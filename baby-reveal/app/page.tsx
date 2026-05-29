@@ -3,7 +3,6 @@ import { FeaturesSection } from '@/components/landing/FeaturesSection'
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
-import { AuthModal } from '@/components/ui/AuthModal'
 
 export default function LandingPage() {
   return (
@@ -14,7 +13,9 @@ export default function LandingPage() {
           👶 Baby Revelación
         </Link>
         <div className="flex items-center gap-3">
-          <AuthModal />
+          <Link href="/login" className="text-white/60 hover:text-white text-sm font-semibold transition-colors">
+            Iniciar sesión
+          </Link>
           <Link href="/mis-eventos" className="text-white/60 hover:text-white text-sm font-semibold transition-colors">
             Mis Revelaciones
           </Link>
