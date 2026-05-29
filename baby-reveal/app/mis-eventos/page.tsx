@@ -15,38 +15,64 @@ interface MyEvent {
   created_at: string
 }
 
+interface JoinedEvent {
+  slug: string
+  title: string
+  created_at: string
+  nickname: string
+}
+
 export default function MisEventosPage() {
   const [events, setEvents] = useState<MyEvent[]>([])
+  const [joinedEvents, setJoinedEvents] = useState<JoinedEvent[]>([])
   const [copied, setCopied] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     async function load() {
-      // 1. Cargar desde localStorage
       const local: MyEvent[] = JSON.parse(localStorage.getItem('my_events') || '[]')
-
-      // 2. Cargar desde Supabase por guest_owner_id
       const guestId = loadGuestId()
+      const supabase = createClient()
+
       if (guestId) {
-        const { data } = await createClient()
+        // Eventos creados
+        const { data: created } = await supabase
           .from('events')
           .select('slug, title, keeper_token, created_at')
           .eq('guest_owner_id', guestId)
           .order('created_at', { ascending: false })
 
-        if (data && data.length > 0) {
-          // Merge: Supabase como fuente de verdad, sin duplicados
-          const slugsSeen = new Set(data.map((e: MyEvent) => e.slug))
-          const merged = [...data, ...local.filter((e) => !slugsSeen.has(e.slug))]
-          // Sincronizar localStorage
+        if (created && created.length > 0) {
+          const slugsSeen = new Set(created.map((e: MyEvent) => e.slug))
+          const merged = [...created, ...local.filter((e) => !slugsSeen.has(e.slug))]
           localStorage.setItem('my_events', JSON.stringify(merged.slice(0, 20)))
           setEvents(merged)
-          setMounted(true)
-          return
+        } else {
+          setEvents(local)
         }
+
+        // Eventos en los que participó
+        const { data: participations } = await supabase
+          .from('participants')
+          .select('nickname, event_id, events(slug, title, created_at)')
+          .eq('user_id', guestId)
+          .order('joined_at', { ascending: false })
+
+        if (participations) {
+          const joined: JoinedEvent[] = participations
+            .filter((p: any) => p.events)
+            .map((p: any) => ({
+              slug: p.events.slug,
+              title: p.events.title,
+              created_at: p.events.created_at,
+              nickname: p.nickname,
+            }))
+          setJoinedEvents(joined)
+        }
+      } else {
+        setEvents(local)
       }
 
-      setEvents(local)
       setMounted(true)
     }
     load()
@@ -68,19 +94,23 @@ export default function MisEventosPage() {
         </Link>
 
         <h1 className="text-3xl font-black text-white mb-2">Mis Revelaciones</h1>
-        <p className="text-white/40 text-sm mb-8">Eventos que creaste desde este dispositivo</p>
+        <p className="text-white/40 text-sm mb-8">Tus eventos creados y en los que participaste</p>
 
-        {events.length === 0 ? (
+        {/* Eventos creados */}
+        {events.length === 0 && joinedEvents.length === 0 ? (
           <GlassCard className="p-8 text-center">
             <div className="text-5xl mb-4">📭</div>
-            <p className="text-white/50 mb-6">No tienes eventos creados aun</p>
+            <p className="text-white/50 mb-6">No tienes eventos aun</p>
             <Link href="/create">
               <Button size="lg">Crear Revelacion 🎊</Button>
             </Link>
           </GlassCard>
         ) : (
-          <div className="flex flex-col gap-4">
-            {events.map((ev, i) => {
+          <div className="flex flex-col gap-6">
+            {events.length > 0 && (
+              <div className="flex flex-col gap-4">
+                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">🎊 Creados por ti</p>
+                {events.map((ev, i) => {
               const base = window.location.origin
               const inviteUrl = `${base}/event/${ev.slug}`
               const keeperUrl = `${base}/keeper/${ev.slug}/${ev.keeper_token}`
@@ -142,13 +172,44 @@ export default function MisEventosPage() {
                   </GlassCard>
                 </motion.div>
               )
-            })}
+                })}
+              </div>
+            )}
 
-            <Link href="/create" className="mt-2">
-              <Button variant="secondary" size="lg" className="w-full">
-                + Crear otra Revelacion
-              </Button>
-            </Link>
+                <Link href="/create" className="mt-2">
+                  <Button variant="secondary" size="lg" className="w-full">
+                    + Crear otra Revelacion
+                  </Button>
+                </Link>
+              </div>
+            )}
+
+            {/* Eventos participados */}
+            {joinedEvents.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <p className="text-xs text-white/40 font-bold uppercase tracking-widest">🎉 Eventos en los que participaste</p>
+                {joinedEvents.map((ev, i) => (
+                  <motion.div
+                    key={ev.slug}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.06 }}
+                  >
+                    <GlassCard className="p-4" glow="blue">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h2 className="font-black text-white">{ev.title}</h2>
+                          <p className="text-white/30 text-xs mt-0.5">Como: <span className="text-blue-400/70">{ev.nickname}</span></p>
+                        </div>
+                        <Link href={`/event/${ev.slug}`}>
+                          <Button variant="ghost" size="sm">Entrar →</Button>
+                        </Link>
+                      </div>
+                    </GlassCard>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
