@@ -7,6 +7,21 @@ import { Button } from '@/components/ui/Button'
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-[#050508]">
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-3 bg-black/40 backdrop-blur-xl border-b border-white/10">
+        <Link href="/" className="text-white font-black text-lg tracking-tight">
+          👶 Baby Revelación
+        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/mis-eventos" className="text-white/60 hover:text-white text-sm font-semibold transition-colors">
+            Mis Revelaciones
+          </Link>
+          <Link href="/create">
+            <Button size="sm" variant="primary">Crear</Button>
+          </Link>
+        </div>
+      </nav>
+      <div className="pt-14">
       <HeroSection />
       <FeaturesSection />
       <TestimonialsSection />
@@ -38,6 +53,7 @@ export default function LandingPage() {
         </Link>
         <p>Baby Revelacion 2025 - Hecho con 💖 para las familias</p>
       </footer>
+    </div>
     </main>
   )
 }
