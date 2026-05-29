@@ -21,7 +21,7 @@ export function AuthModal() {
   useEffect(() => {
     setMounted(true)
     setLoggedIn(!!loadGuestId())
-  }, [open])
+  }, [])
 
   async function handleSubmit() {
     setError(null)
@@ -60,7 +60,7 @@ export function AuthModal() {
       </button>
 
       <AnimatePresence>
-        {open && mounted && createPortal(
+        {mounted && open && createPortal(
           <>
             {/* Backdrop */}
             <motion.div
