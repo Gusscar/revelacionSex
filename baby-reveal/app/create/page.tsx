@@ -12,6 +12,7 @@ import { GlassCard } from '@/components/ui/GlassCard'
 import { REVEAL_THEMES, Event } from '@/types'
 import { createEvent } from '@/services/events'
 import { createClient } from '@/lib/supabase/client'
+import { loadGuestId } from '@/utils/guestAuth'
 
 const schema = z.object({
   title: z.string().min(3, 'Minimo 3 caracteres').max(60, 'Maximo 60 caracteres'),
@@ -58,6 +59,7 @@ export default function CreateEventPage() {
         theme: values.theme,
         reveal_mode: values.reveal_mode,
         owner_id: user?.id ?? null,
+        guest_owner_id: loadGuestId(),
       })
 
       // Save keeper token locally so the creator can recover it

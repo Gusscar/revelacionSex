@@ -10,6 +10,7 @@ export async function createEvent(data: {
   reveal_mode: string
   cover_image?: string
   owner_id: string | null
+  guest_owner_id?: string | null
 }): Promise<Event> {
   const supabase = createClient()
   const slug = generateSlug(data.title)

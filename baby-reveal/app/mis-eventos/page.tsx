@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { Button } from '@/components/ui/Button'
+import { createClient } from '@/lib/supabase/client'
+import { loadGuestId } from '@/utils/guestAuth'
 
 interface MyEvent {
   slug: string
@@ -19,9 +21,35 @@ export default function MisEventosPage() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('my_events') || '[]')
-    setEvents(saved)
-    setMounted(true)
+    async function load() {
+      // 1. Cargar desde localStorage
+      const local: MyEvent[] = JSON.parse(localStorage.getItem('my_events') || '[]')
+
+      // 2. Cargar desde Supabase por guest_owner_id
+      const guestId = loadGuestId()
+      if (guestId) {
+        const { data } = await createClient()
+          .from('events')
+          .select('slug, title, keeper_token, created_at')
+          .eq('guest_owner_id', guestId)
+          .order('created_at', { ascending: false })
+
+        if (data && data.length > 0) {
+          // Merge: Supabase como fuente de verdad, sin duplicados
+          const slugsSeen = new Set(data.map((e: MyEvent) => e.slug))
+          const merged = [...data, ...local.filter((e) => !slugsSeen.has(e.slug))]
+          // Sincronizar localStorage
+          localStorage.setItem('my_events', JSON.stringify(merged.slice(0, 20)))
+          setEvents(merged)
+          setMounted(true)
+          return
+        }
+      }
+
+      setEvents(local)
+      setMounted(true)
+    }
+    load()
   }, [])
 
   async function copy(text: string, key: string) {
