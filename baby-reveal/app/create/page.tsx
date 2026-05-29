@@ -12,7 +12,8 @@ import { GlassCard } from '@/components/ui/GlassCard'
 import { REVEAL_THEMES, Event } from '@/types'
 import { createEvent } from '@/services/events'
 import { createClient } from '@/lib/supabase/client'
-import { loadGuestId } from '@/utils/guestAuth'
+import { loadGuestId, saveGuestId } from '@/utils/guestAuth'
+import { registerGuest, loginGuest } from '@/services/guestAccounts'
 
 const schema = z.object({
   title: z.string().min(3, 'Minimo 3 caracteres').max(60, 'Maximo 60 caracteres'),
@@ -30,6 +31,18 @@ export default function CreateEventPage() {
   const [createdEvent, setCreatedEvent] = useState<Event | null>(null)
   const [copied, setCopied] = useState<'invite' | 'keeper' | null>(null)
 
+  // Auth step before creating event
+  const [authStep, setAuthStep] = useState(false)
+  const [pendingValues, setPendingValues] = useState<FormValues | null>(null)
+  const [authTab, setAuthTab] = useState<'registro' | 'login'>('registro')
+  const [authName, setAuthName] = useState('')
+  const [authPassword, setAuthPassword] = useState('')
+  const [authConfirm, setAuthConfirm] = useState('')
+  const [authError, setAuthError] = useState<string | null>(null)
+  const [authLoading, setAuthLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { theme: 'confetti', reveal_mode: 'dramatic' },
@@ -37,16 +50,12 @@ export default function CreateEventPage() {
 
   const selectedTheme = watch('theme')
 
-  async function onSubmit(values: FormValues) {
+  async function createTheEvent(values: FormValues) {
     setLoading(true)
     setError(null)
     try {
       const supabase = createClient()
-
-      // Try to get existing session
       let { data: { user } } = await supabase.auth.getUser()
-
-      // Try anonymous sign-in if no user (may not be enabled — handled below)
       if (!user) {
         const { data } = await supabase.auth.signInAnonymously().catch(() => ({ data: { user: null } }))
         user = data?.user ?? null
@@ -80,6 +89,35 @@ export default function CreateEventPage() {
     }
   }
 
+  async function onSubmit(values: FormValues) {
+    if (!loadGuestId()) {
+      setPendingValues(values)
+      setAuthStep(true)
+      return
+    }
+    await createTheEvent(values)
+  }
+
+  async function handleAuth() {
+    setAuthError(null)
+    if (!authName.trim()) return setAuthError('Ingresa tu nombre')
+    if (authPassword.length < 6) return setAuthError('La contraseña debe tener al menos 6 caracteres')
+    if (authTab === 'registro' && authPassword !== authConfirm) return setAuthError('Las contraseñas no coinciden')
+    setAuthLoading(true)
+    try {
+      const account = authTab === 'registro'
+        ? await registerGuest(authName, authPassword)
+        : await loginGuest(authName, authPassword)
+      saveGuestId(account.id)
+      setAuthStep(false)
+      if (pendingValues) await createTheEvent(pendingValues)
+    } catch (e: unknown) {
+      setAuthError(e instanceof Error ? e.message : 'Error inesperado')
+    } finally {
+      setAuthLoading(false)
+    }
+  }
+
   async function copyLink(type: 'invite' | 'keeper') {
     if (!createdEvent) return
     const base = window.location.origin
@@ -89,6 +127,89 @@ export default function CreateEventPage() {
     await navigator.clipboard.writeText(url)
     setCopied(type)
     setTimeout(() => setCopied(null), 2000)
+  }
+
+  // AUTH STEP
+  if (authStep) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-blue-950 via-slate-900 to-black px-4 py-12 flex items-center justify-center">
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm">
+          <GlassCard className="p-7 flex flex-col gap-4">
+            <div className="text-center mb-2">
+              <div className="text-4xl mb-3">👶</div>
+              <h2 className="text-xl font-black text-white">Crea tu cuenta</h2>
+              <p className="text-white/40 text-sm mt-1">Para poder ver tus revelaciones después</p>
+            </div>
+
+            <div className="flex rounded-xl overflow-hidden border border-white/10">
+              {(['registro', 'login'] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => { setAuthTab(t); setAuthError(null) }}
+                  className={`flex-1 py-2 text-sm font-semibold transition-all cursor-pointer ${
+                    authTab === t ? 'bg-blue-600 text-white' : 'text-white/40 hover:text-white/70'
+                  }`}
+                >
+                  {t === 'registro' ? 'Registro' : 'Iniciar sesión'}
+                </button>
+              ))}
+            </div>
+
+            <input
+              value={authName}
+              onChange={(e) => setAuthName(e.target.value)}
+              placeholder="Tu nombre..."
+              autoFocus
+              className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-400 transition-all text-sm font-semibold"
+            />
+
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={authPassword}
+                onChange={(e) => setAuthPassword(e.target.value)}
+                placeholder="Contraseña..."
+                className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-blue-400 transition-all text-sm font-semibold"
+              />
+              <button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">
+                {showPassword ? '🙈' : '👁'}
+              </button>
+            </div>
+
+            {authTab === 'registro' && (
+              <div className="relative">
+                <input
+                  type={showConfirm ? 'text' : 'password'}
+                  value={authConfirm}
+                  onChange={(e) => setAuthConfirm(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
+                  placeholder="Confirmar contraseña..."
+                  className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-blue-400 transition-all text-sm font-semibold"
+                />
+                <button type="button" tabIndex={-1} onClick={() => setShowConfirm((v) => !v)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">
+                  {showConfirm ? '🙈' : '👁'}
+                </button>
+              </div>
+            )}
+
+            {authError && (
+              <p className="text-red-400 text-xs text-center bg-red-500/10 rounded-xl px-3 py-2">{authError}</p>
+            )}
+
+            <Button onClick={handleAuth} size="lg" loading={authLoading} className="w-full">
+              {authTab === 'registro' ? 'Registrarse y Crear Evento' : 'Iniciar sesión y Crear Evento'}
+            </Button>
+
+            <button onClick={() => setAuthStep(false)}
+              className="text-white/25 text-xs text-center hover:text-white/50 transition-colors cursor-pointer">
+              ← Volver al formulario
+            </button>
+          </GlassCard>
+        </motion.div>
+      </main>
+    )
   }
 
   // SUCCESS SCREEN
