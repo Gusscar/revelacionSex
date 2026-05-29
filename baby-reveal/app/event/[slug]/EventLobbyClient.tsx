@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/Input'
 import { joinEvent, sendComment } from '@/services/events'
 import { createClient } from '@/lib/supabase/client'
 import { InvitationScreen } from '@/components/invite/InvitationScreen'
+import { filterProfanity, containsProfanity } from '@/utils/profanity'
 
 interface Props {
   initialEvent: Event
@@ -31,6 +32,9 @@ export function EventLobbyClient({
   const {
     setEvent,
     setParticipants,
+    comments,
+    setComments,
+    addComment,
     currentUserParticipant,
     setCurrentUserParticipant,
     addParticipant,
@@ -40,7 +44,7 @@ export function EventLobbyClient({
   const [joined, setJoined] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [comment, setComment] = useState('')
-  const [comments, setComments] = useState<Comment[]>(initialComments)
+  const [commentError, setCommentError] = useState<string | null>(null)
   const [tab, setTab] = useState<'lobby' | 'chat' | 'qr'>('lobby')
   const [inviteUrl, setInviteUrl] = useState('')
 
@@ -48,6 +52,7 @@ export function EventLobbyClient({
     async function init() {
       setEvent(initialEvent)
       setParticipants(initialParticipants)
+      setComments(initialComments)
       setInviteUrl(window.location.href)
 
       const participantKey = `participant_${initialEvent.id}`
@@ -147,14 +152,21 @@ export function EventLobbyClient({
   }
 
   async function handleComment() {
-    if (!comment.trim()) return
+    const text = comment.trim()
+    if (!text) return
+    if (containsProfanity(text)) {
+      setCommentError('Tu mensaje contiene palabras no permitidas.')
+      return
+    }
+    setCommentError(null)
+    const filtered = filterProfanity(text)
     const newComment = await sendComment({
       event_id: initialEvent.id,
       user_id: userId,
       nickname: currentUserParticipant?.nickname,
-      message: comment.trim(),
+      message: filtered,
     })
-    setComments((prev) => [newComment, ...prev])
+    addComment(newComment)
     setComment('')
   }
 
@@ -223,17 +235,24 @@ export function EventLobbyClient({
             className="max-w-lg mx-auto px-4 py-6 flex flex-col gap-4"
           >
             {/* Comment Input */}
-            <div className="flex gap-2">
-              <input
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleComment()}
-                placeholder="Escribe algo..."
-                className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-blue-400"
-              />
-              <Button onClick={handleComment} size="md" className="flex-shrink-0">
-                Enviar
-              </Button>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <input
+                  value={comment}
+                  onChange={(e) => { setComment(e.target.value); setCommentError(null) }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleComment()}
+                  placeholder="Escribe algo..."
+                  className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-blue-400"
+                />
+                <Button onClick={handleComment} size="md" className="flex-shrink-0">
+                  Enviar
+                </Button>
+              </div>
+              {commentError && (
+                <p className="text-red-400 text-xs bg-red-500/10 rounded-lg px-3 py-1.5">
+                  {commentError}
+                </p>
+              )}
             </div>
 
             {/* Comments List */}

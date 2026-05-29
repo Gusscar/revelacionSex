@@ -20,6 +20,7 @@ interface EventStore {
   addParticipant: (participant: Participant) => void
   updateParticipant: (participant: Participant) => void
   addReaction: (reaction: Reaction) => void
+  setComments: (comments: Comment[]) => void
   addComment: (comment: Comment) => void
   addFloatingEmoji: (emoji: string) => void
   removeFloatingEmoji: (id: string) => void
@@ -75,8 +76,13 @@ export const useEventStore = create<EventStore>((set, get) => ({
   addReaction: (reaction) =>
     set((state) => ({ reactions: [reaction, ...state.reactions].slice(0, 100) })),
 
+  setComments: (comments) => set({ comments }),
+
   addComment: (comment) =>
-    set((state) => ({ comments: [comment, ...state.comments].slice(0, 200) })),
+    set((state) => {
+      if (state.comments.some((c) => c.id === comment.id)) return state
+      return { comments: [comment, ...state.comments].slice(0, 200) }
+    }),
 
   addFloatingEmoji: (emoji) => {
     const id = Math.random().toString(36).slice(2)
