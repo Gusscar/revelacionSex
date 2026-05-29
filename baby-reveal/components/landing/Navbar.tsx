@@ -29,10 +29,10 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile: Crear + hamburger */}
+        {/* Mobile: Iniciar sesión + hamburger */}
         <div className="flex sm:hidden items-center gap-2">
-          <Link href="/create">
-            <Button size="sm" variant="primary">Crear</Button>
+          <Link href="/login" className="text-white/60 hover:text-white text-sm font-semibold transition-colors">
+            Iniciar sesión
           </Link>
           <button
             onClick={() => setOpen(v => !v)}
