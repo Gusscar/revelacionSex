@@ -3,27 +3,12 @@ import { FeaturesSection } from '@/components/landing/FeaturesSection'
 import { TestimonialsSection } from '@/components/landing/TestimonialsSection'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
+import { Navbar } from '@/components/landing/Navbar'
 
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-[#050508]">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-3 bg-black/40 backdrop-blur-xl border-b border-white/10">
-        <Link href="/" className="text-white font-black text-lg tracking-tight">
-          👶 Baby Revelación
-        </Link>
-        <div className="flex items-center gap-3">
-          <Link href="/login" className="text-white/60 hover:text-white text-sm font-semibold transition-colors">
-            Iniciar sesión
-          </Link>
-          <Link href="/mis-eventos" className="text-white/60 hover:text-white text-sm font-semibold transition-colors">
-            Mis Revelaciones
-          </Link>
-          <Link href="/create">
-            <Button size="sm" variant="primary">Crear</Button>
-          </Link>
-        </div>
-      </nav>
+      <Navbar />
       <div className="pt-14">
       <HeroSection />
       <FeaturesSection />
