@@ -66,13 +66,14 @@ export function EventLobbyClient({
           if (parsed?.id && parsed?.event_id === initialEvent.id) {
             setCurrentUserParticipant(parsed as Participant)
             setJoined(true)
-            // Refrescar en background
+            // Refrescar en background (solo actualiza, nunca borra si hay error de red/RLS)
             createClient()
               .from('participants')
               .select('*')
               .eq('id', parsed.id)
               .single()
-              .then(({ data }) => {
+              .then(({ data, error }) => {
+                if (error) return // red o RLS — conservar estado local
                 if (data) {
                   setCurrentUserParticipant(data)
                   localStorage.setItem(participantKey, JSON.stringify(data))
