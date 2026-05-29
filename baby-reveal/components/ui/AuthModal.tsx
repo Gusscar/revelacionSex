@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { registerGuest, loginGuest } from '@/services/guestAccounts'
 import { saveGuestId, loadGuestId } from '@/utils/guestAuth'
@@ -57,7 +58,7 @@ export function AuthModal() {
       </button>
 
       <AnimatePresence>
-        {open && (
+        {open && createPortal(
           <>
             {/* Backdrop */}
             <motion.div
@@ -65,7 +66,7 @@ export function AuthModal() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
             />
 
             {/* Modal */}
@@ -73,8 +74,9 @@ export function AuthModal() {
               initial={{ opacity: 0, scale: 0.92, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.92, y: 20 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-sm px-4"
+              className="fixed inset-0 flex items-center justify-center z-[101] px-4 pointer-events-none"
             >
+            <div className="w-full max-w-sm pointer-events-auto">
               <div className="rounded-3xl border border-white/20 overflow-hidden"
                 style={{
                   background: 'linear-gradient(145deg, rgba(37,99,235,0.25) 0%, rgba(8,3,20,0.95) 60%, rgba(236,72,153,0.15) 100%)',
@@ -181,8 +183,10 @@ export function AuthModal() {
                   )}
                 </div>
               </div>
+            </div>
             </motion.div>
-          </>
+          </>,
+          document.body
         )}
       </AnimatePresence>
     </>
