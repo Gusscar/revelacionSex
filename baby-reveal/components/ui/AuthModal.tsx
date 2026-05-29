@@ -7,6 +7,7 @@ import { registerGuest, loginGuest } from '@/services/guestAccounts'
 import { saveGuestId, loadGuestId } from '@/utils/guestAuth'
 
 export function AuthModal() {
+  const [mounted, setMounted] = useState(false)
   const [open, setOpen] = useState(false)
   const [loggedIn, setLoggedIn] = useState(false)
   const [tab, setTab] = useState<'registro' | 'login'>('registro')
@@ -18,6 +19,7 @@ export function AuthModal() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     setLoggedIn(!!loadGuestId())
   }, [open])
 
@@ -58,7 +60,7 @@ export function AuthModal() {
       </button>
 
       <AnimatePresence>
-        {open && createPortal(
+        {open && mounted && createPortal(
           <>
             {/* Backdrop */}
             <motion.div
