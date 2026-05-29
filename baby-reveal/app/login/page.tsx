@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { registerGuest, loginGuest } from '@/services/guestAccounts'
 import { saveGuestId, loadGuestId } from '@/utils/guestAuth'
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const from = searchParams.get('from')
   const [tab, setTab] = useState<'registro' | 'login'>('login')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
@@ -35,7 +37,7 @@ export default function LoginPage() {
         ? await registerGuest(name, password)
         : await loginGuest(name, password)
       saveGuestId(account.id)
-      router.push('/mis-eventos')
+      router.push(from ?? '/mis-eventos')
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Error inesperado')
     } finally {
@@ -106,7 +108,9 @@ export default function LoginPage() {
             </div>
 
             <p className="text-white/40 text-xs text-center">
-              {tab === 'registro'
+              {from
+                ? 'Inicia sesión para volver al evento'
+                : tab === 'registro'
                 ? 'Crea tu cuenta para guardar y gestionar tus revelaciones'
                 : 'Ingresa con tu nombre y contraseña'}
             </p>
@@ -179,12 +183,20 @@ export default function LoginPage() {
               ) : tab === 'registro' ? 'Crear cuenta' : 'Entrar'}
             </button>
 
-            <Link href="/" className="text-white/25 text-xs text-center hover:text-white/50 transition-colors block">
-              ← Volver al inicio
+            <Link href={from ?? '/'} className="text-white/25 text-xs text-center hover:text-white/50 transition-colors block">
+              ← Volver
             </Link>
           </div>
         </div>
       </motion.div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
   )
 }

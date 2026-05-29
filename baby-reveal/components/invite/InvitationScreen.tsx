@@ -8,6 +8,7 @@ import {
   useTransform,
   useSpring,
 } from 'framer-motion'
+import Link from 'next/link'
 import { Event } from '@/types'
 import { registerGuest, loginGuest } from '@/services/guestAccounts'
 import { saveGuestId } from '@/utils/guestAuth'
@@ -521,6 +522,13 @@ export function InvitationScreen({ event, onJoin, joining }: InvitationScreenPro
                           >
                             ← Volver
                           </button>
+
+                          <Link
+                            href={`/login?from=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '')}`}
+                            className="text-blue-400/50 text-xs text-center hover:text-blue-400 transition-colors block"
+                          >
+                            ¿Perdiste tu sesión? Inicia sesión aquí
+                          </Link>
                         </motion.div>
                       )}
                     </AnimatePresence>
