@@ -90,11 +90,6 @@ export default function CreateEventPage() {
   }
 
   async function onSubmit(values: FormValues) {
-    if (!loadGuestId()) {
-      setPendingValues(values)
-      setAuthStep(true)
-      return
-    }
     await createTheEvent(values)
   }
 
@@ -237,6 +232,12 @@ export default function CreateEventPage() {
             <h1 className="text-3xl font-black text-white">Evento creado!</h1>
             <p className="text-white/50 mt-2">Ahora comparte los links correctos con cada persona</p>
           </div>
+
+          {!loadGuestId() && (
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl px-4 py-3 text-yellow-300/80 text-sm text-center">
+              💡 <span className="font-semibold">Tip:</span> Regístrate desde <span className="font-semibold">Iniciar sesión</span> en el menú para recuperar este evento aunque pierdas el historial.
+            </div>
+          )}
 
           {/* Invite link - for everyone */}
           <GlassCard className="p-5" glow="blue">
