@@ -89,7 +89,7 @@ export async function joinEvent(data: {
   const supabase = createClient()
   const { data: participant, error } = await supabase
     .from('participants')
-    .insert(data)
+    .upsert(data, { onConflict: 'event_id,user_id', ignoreDuplicates: false })
     .select()
     .single()
 
