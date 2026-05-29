@@ -13,6 +13,7 @@ import { joinEvent, sendComment } from '@/services/events'
 import { createClient } from '@/lib/supabase/client'
 import { InvitationScreen } from '@/components/invite/InvitationScreen'
 import { filterProfanity, containsProfanity } from '@/utils/profanity'
+import { loadGuestId } from '@/utils/guestAuth'
 
 interface Props {
   initialEvent: Event
@@ -85,26 +86,15 @@ export function EventLobbyClient({
           localStorage.removeItem(participantKey)
         }
 
-        // 2. Buscar via sesión del servidor
-        if (userId) {
-          const existing = initialParticipants.find((p) => p.user_id === userId)
-          if (existing) {
-            setCurrentUserParticipant(existing)
-            localStorage.setItem(participantKey, JSON.stringify(existing))
-            setJoined(true)
-            return
-          }
-        }
-
-        // 3. Verificar sesión activa en el cliente
-        const { data: authData } = await createClient().auth.getUser()
-        if (authData.user) {
+        // 2. Buscar por guest_account_id guardado localmente
+        const guestId = loadGuestId()
+        if (guestId) {
           const { data: existing } = await createClient()
             .from('participants')
             .select('*')
             .eq('event_id', initialEvent.id)
-            .eq('user_id', authData.user.id)
-            .single()
+            .eq('user_id', guestId)
+            .maybeSingle()
           if (existing) {
             setCurrentUserParticipant(existing)
             localStorage.setItem(participantKey, JSON.stringify(existing))
@@ -134,11 +124,10 @@ export function EventLobbyClient({
     if (!name.trim()) return
     setJoining(true)
     try {
-      const uid = (await createClient().auth.getUser()).data.user?.id ?? null
       const participant = await joinEvent({
         event_id: initialEvent.id,
         nickname: name.trim(),
-        user_id: uid,
+        user_id: loadGuestId(),
       })
       setCurrentUserParticipant(participant)
       addParticipant(participant)

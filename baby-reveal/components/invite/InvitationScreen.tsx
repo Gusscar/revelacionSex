@@ -9,7 +9,8 @@ import {
   useSpring,
 } from 'framer-motion'
 import { Event } from '@/types'
-import { createClient } from '@/lib/supabase/client'
+import { registerGuest, loginGuest } from '@/services/guestAccounts'
+import { saveGuestId } from '@/utils/guestAuth'
 
 interface InvitationScreenProps {
   event: Event
@@ -78,14 +79,6 @@ export function InvitationScreen({ event, onJoin, joining }: InvitationScreenPro
     mouseY.set(0)
   }
 
-  function nameToEmail(name: string): string {
-    const slug = name.trim().toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '')
-      .slice(0, 40) || 'usuario'
-    return `${slug}@guest.babyrevelacion.app`
-  }
-
   async function handleAuthAndJoin() {
     setAuthError(null)
     if (!nickname.trim()) return setAuthError('Ingresa tu nombre')
@@ -94,27 +87,13 @@ export function InvitationScreen({ event, onJoin, joining }: InvitationScreenPro
 
     setAuthLoading(true)
     try {
-      const supabase = createClient()
-      const email = nameToEmail(nickname)
-      if (authTab === 'registro') {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { data: { name: nickname.trim() } },
-        })
-        if (error) {
-          setAuthError(error.message.toLowerCase().includes('already')
-            ? 'Ese nombre ya está en uso. Usa "Iniciar sesión" con tu nombre y contraseña.'
-            : error.message)
-          return
-        }
-        await onJoin(nickname.trim())
-      } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) { setAuthError('Nombre o contraseña incorrectos'); return }
-        const name = data.user?.user_metadata?.name ?? nickname.trim()
-        await onJoin(name)
-      }
+      const account = authTab === 'registro'
+        ? await registerGuest(nickname, password)
+        : await loginGuest(nickname, password)
+      saveGuestId(account.id)
+      await onJoin(account.name)
+    } catch (e: unknown) {
+      setAuthError(e instanceof Error ? e.message : 'Error inesperado')
     } finally {
       setAuthLoading(false)
     }
