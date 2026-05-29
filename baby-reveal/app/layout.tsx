@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration'
 import { InstallPrompt } from '@/components/InstallPrompt'
+import { PullToRefresh } from '@/components/ui/PullToRefresh'
 
 export const metadata: Metadata = {
   title: 'Baby Revelacion - La revelacion de genero mas viral',
@@ -51,6 +52,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-[#050508] text-white antialiased">
         <ServiceWorkerRegistration />
         <InstallPrompt />
+        <PullToRefresh />
         {children}
       </body>
     </html>
