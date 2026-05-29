@@ -42,6 +42,11 @@ export default function RootLayout({
     <html lang="es">
       <head>
         <link rel="apple-touch-icon" href="/icon" />
+        {/* Splash screens iOS */}
+        <link rel="apple-touch-startup-image" href="/splash" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" />
+        <link rel="apple-touch-startup-image" href="/splash" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" />
+        <link rel="apple-touch-startup-image" href="/splash" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" />
+        <link rel="apple-touch-startup-image" href="/splash" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
       </head>
       <body className="min-h-screen bg-[#050508] text-white antialiased">
         <ServiceWorkerRegistration />
