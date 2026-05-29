@@ -22,7 +22,6 @@ type Phase = 'intro' | 'invitation' | 'join'
 export function InvitationScreen({ event, onJoin, joining }: InvitationScreenProps) {
   const [phase, setPhase] = useState<Phase>('intro')
   const [nickname, setNickname] = useState('')
-  const [email, setEmail] = useState('')
   const [authTab, setAuthTab] = useState<'registro' | 'login'>('registro')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -79,37 +78,41 @@ export function InvitationScreen({ event, onJoin, joining }: InvitationScreenPro
     mouseY.set(0)
   }
 
+  function nameToEmail(name: string): string {
+    const slug = name.trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '')
+      .slice(0, 40) || 'usuario'
+    return `${slug}@guest.babyrevelacion.app`
+  }
+
   async function handleAuthAndJoin() {
     setAuthError(null)
-    if (authTab === 'registro') {
-      if (!nickname.trim()) return setAuthError('Ingresa tu nombre')
-      if (!email.trim()) return setAuthError('Ingresa tu correo')
-      if (password.length < 6) return setAuthError('La contraseña debe tener al menos 6 caracteres')
-      if (password !== confirmPassword) return setAuthError('Las contraseñas no coinciden')
-    } else {
-      if (!email.trim()) return setAuthError('Ingresa tu correo')
-      if (!password) return setAuthError('Ingresa tu contraseña')
-    }
+    if (!nickname.trim()) return setAuthError('Ingresa tu nombre')
+    if (password.length < 6) return setAuthError('La contraseña debe tener al menos 6 caracteres')
+    if (authTab === 'registro' && password !== confirmPassword) return setAuthError('Las contraseñas no coinciden')
+
     setAuthLoading(true)
     try {
       const supabase = createClient()
+      const email = nameToEmail(nickname)
       if (authTab === 'registro') {
         const { error } = await supabase.auth.signUp({
-          email: email.trim(),
+          email,
           password,
           options: { data: { name: nickname.trim() } },
         })
         if (error) {
           setAuthError(error.message.toLowerCase().includes('already')
-            ? 'Ya existe una cuenta con ese correo. Usa "Iniciar sesión".'
+            ? 'Ese nombre ya está en uso. Usa "Iniciar sesión" con tu nombre y contraseña.'
             : error.message)
           return
         }
         await onJoin(nickname.trim())
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
-        if (error) { setAuthError('Correo o contraseña incorrectos'); return }
-        const name = data.user?.user_metadata?.name ?? email.split('@')[0]
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+        if (error) { setAuthError('Nombre o contraseña incorrectos'); return }
+        const name = data.user?.user_metadata?.name ?? nickname.trim()
         await onJoin(name)
       }
     } finally {
@@ -462,21 +465,11 @@ export function InvitationScreen({ event, onJoin, joining }: InvitationScreenPro
                             ))}
                           </div>
 
-                          {authTab === 'registro' && (
-                            <input
-                              value={nickname}
-                              onChange={(e) => setNickname(e.target.value)}
-                              placeholder="Tu nombre..."
-                              autoFocus
-                              className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-400 transition-all text-sm font-semibold"
-                            />
-                          )}
-
                           <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="tu@correo.com"
+                            value={nickname}
+                            onChange={(e) => setNickname(e.target.value)}
+                            placeholder="Tu nombre..."
+                            autoFocus
                             className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:border-blue-400 transition-all text-sm font-semibold"
                           />
 
@@ -485,6 +478,7 @@ export function InvitationScreen({ event, onJoin, joining }: InvitationScreenPro
                               type={showPassword ? 'text' : 'password'}
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
+                              onKeyDown={(e) => authTab === 'login' && e.key === 'Enter' && handleAuthAndJoin()}
                               placeholder="Contraseña..."
                               className="w-full bg-white/10 border border-white/20 rounded-2xl px-5 py-3 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-blue-400 transition-all text-sm font-semibold"
                             />
