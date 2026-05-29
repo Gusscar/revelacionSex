@@ -35,7 +35,7 @@ export default function MisEventosPage() {
       const supabase = createClient()
 
       if (guestId) {
-        // Eventos creados
+        // Con sesión activa: solo Supabase, ignorar localStorage de otro usuario
         const { data: created } = await supabase
           .from('events')
           .select('slug, title, keeper_token, created_at')
@@ -43,12 +43,8 @@ export default function MisEventosPage() {
           .order('created_at', { ascending: false })
 
         if (created && created.length > 0) {
-          const slugsSeen = new Set(created.map((e: MyEvent) => e.slug))
-          const merged = [...created, ...local.filter((e) => !slugsSeen.has(e.slug))]
-          localStorage.setItem('my_events', JSON.stringify(merged.slice(0, 20)))
-          setEvents(merged)
-        } else {
-          setEvents(local)
+          localStorage.setItem('my_events', JSON.stringify(created.slice(0, 20)))
+          setEvents(created)
         }
 
         // Eventos en los que participó
