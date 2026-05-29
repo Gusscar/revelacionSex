@@ -39,7 +39,6 @@ export function EventLobbyClient({
   const [joining, setJoining] = useState(false)
   const [joined, setJoined] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const [authDisplayName, setAuthDisplayName] = useState<string | null>(null)
   const [comment, setComment] = useState('')
   const [comments, setComments] = useState<Comment[]>(initialComments)
   const [tab, setTab] = useState<'lobby' | 'chat' | 'qr'>('lobby')
@@ -81,42 +80,6 @@ export function EventLobbyClient({
           localStorage.removeItem(participantKey)
         }
 
-        // 2. Buscar via sesión del servidor
-        if (userId) {
-          const existing = initialParticipants.find((p) => p.user_id === userId)
-          if (existing) {
-            setCurrentUserParticipant(existing)
-            localStorage.setItem(participantKey, JSON.stringify(existing))
-            setJoined(true)
-            return
-          }
-        }
-
-        // 3. Verificar sesión activa en el cliente (cubre timing SSR)
-        const { data: authData } = await createClient().auth.getUser()
-        if (authData.user) {
-          // Buscar participante directamente en DB
-          const { data: existing } = await createClient()
-            .from('participants')
-            .select('*')
-            .eq('event_id', initialEvent.id)
-            .eq('user_id', authData.user.id)
-            .single()
-
-          if (existing) {
-            setCurrentUserParticipant(existing)
-            localStorage.setItem(participantKey, JSON.stringify(existing))
-            setJoined(true)
-            return
-          }
-
-          // Autenticado pero sin participante — pre-llenar nombre
-          const name =
-            authData.user.user_metadata?.name ??
-            authData.user.email?.split('@')[0] ??
-            null
-          setAuthDisplayName(name)
-        }
       } catch {
         // Si algo falla, mostrar la pantalla de invitacion
       } finally {
@@ -140,13 +103,10 @@ export function EventLobbyClient({
     if (!name.trim()) return
     setJoining(true)
     try {
-      const supabase = createClient()
-      // Obtener el uid del usuario autenticado (ya viene registrado desde InvitationScreen)
-      const uid = (await supabase.auth.getUser()).data.user?.id ?? null
       const participant = await joinEvent({
         event_id: initialEvent.id,
         nickname: name.trim(),
-        user_id: uid,
+        user_id: null,
       })
       setCurrentUserParticipant(participant)
       addParticipant(participant)
@@ -190,7 +150,6 @@ export function EventLobbyClient({
         event={initialEvent}
         onJoin={handleJoin}
         joining={joining}
-        authDisplayName={authDisplayName}
       />
     )
   }
